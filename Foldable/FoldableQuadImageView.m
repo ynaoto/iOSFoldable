@@ -79,7 +79,19 @@
     [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(0.5, 1.0)];
     [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.5, 1.0)];
     
-    foldedLeftToRight = YES;
+    foldedTopToBottom = YES;
+}
+
+- (void)foldBottomToTop
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:-M_PI m34:1.0/500];
+    [self resetZPosition];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(0.5, 0.0)];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.5, 0.0)];
+    
+    foldedBottomToTop = YES;
 }
 
 - (void)foldLeftToRight
@@ -109,14 +121,24 @@
 - (void)unfoldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
-    
+
+    CABasicAnimation *anim = [self setupXRotationAnimationFrom:-M_PI to:0 m34:1.0/500];
+    [self resetZPosition];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.5, 0.0)];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(0.5, 0.0)];
+
     foldedBottomToTop = NO;
 }
 
 - (void)unfoldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
-    
+
+    CABasicAnimation *anim = [self setupXRotationAnimationFrom:M_PI to:0 m34:-1.0/500];
+    [self resetZPosition];
+    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.5, 1.0)];
+    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(0.5, 1.0)];
+
     foldedTopToBottom = NO;
 }
 
@@ -164,6 +186,26 @@
 - (void)topLeftSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+    
+    if (foldedLeftToRight) {
+        // do nothing
+    } else if (foldedRightToLeft) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
+            [self unfoldLeftToRight];
+        }
+    } else if (foldedTopToBottom) {
+        // do nothing
+    } else if (foldedBottomToTop) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+            [self unfoldTopToBottom];
+        }
+    } else {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
+            [self foldLeftToRight];
+        } else if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+            [self foldTopToBottom];
+        }
+    }
 }
 
 - (void)topRight:(UITapGestureRecognizer*)gestureRecognizer
@@ -186,6 +228,26 @@
 - (void)topRightSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+    
+    if (foldedLeftToRight) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self unfoldRightToLeft];
+        }
+    } else if (foldedRightToLeft) {
+        // do nothing
+    } else if (foldedTopToBottom) {
+        // do nothing
+    } else if (foldedBottomToTop) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+            [self unfoldTopToBottom];
+        }
+    } else {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self foldRightToLeft];
+        } else if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
+            [self foldTopToBottom];
+        }
+    }
 }
 
 - (void)bottomLeft:(UITapGestureRecognizer*)gestureRecognizer
@@ -208,6 +270,26 @@
 - (void)bottomLeftSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+
+    if (foldedLeftToRight) {
+        // do nothing
+    } else if (foldedRightToLeft) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
+            [self unfoldLeftToRight];
+        }
+    } else if (foldedTopToBottom) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+            [self unfoldBottomToTop];
+        }
+    } else if (foldedBottomToTop) {
+        // do nothing
+    } else {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
+            [self foldLeftToRight];
+        } else if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+            [self foldBottomToTop];
+        }
+    }
 }
 
 - (void)bottomRight:(UITapGestureRecognizer*)gestureRecognizer
@@ -230,6 +312,26 @@
 - (void)bottomRightSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+
+    if (foldedLeftToRight) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self unfoldRightToLeft];
+        }
+    } else if (foldedRightToLeft) {
+        // do nothing
+    } else if (foldedTopToBottom) {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+            [self unfoldBottomToTop];
+        }
+    } else if (foldedBottomToTop) {
+        // do nothing
+    } else {
+        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self foldRightToLeft];
+        } else if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+            [self foldBottomToTop];
+        }
+    }
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
