@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9331297F18293BE700F44449 /* FoldableQuadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9331297E18293BE700F44449 /* FoldableQuadImageView.m */; };
 		93345EF318260FB700B1E2B8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF218260FB700B1E2B8 /* Foundation.framework */; };
 		93345EF518260FB700B1E2B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF418260FB700B1E2B8 /* CoreGraphics.framework */; };
 		93345EF718260FB700B1E2B8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF618260FB700B1E2B8 /* UIKit.framework */; };
@@ -36,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9331297D18293BE700F44449 /* FoldableQuadImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoldableQuadImageView.h; sourceTree = "<group>"; };
+		9331297E18293BE700F44449 /* FoldableQuadImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoldableQuadImageView.m; sourceTree = "<group>"; };
 		93345EEF18260FB700B1E2B8 /* Foldable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Foldable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93345EF218260FB700B1E2B8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		93345EF418260FB700B1E2B8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -119,6 +122,8 @@
 			children = (
 				93345F2718260FD200B1E2B8 /* QuadImageView.h */,
 				93345F2818260FD200B1E2B8 /* QuadImageView.m */,
+				9331297D18293BE700F44449 /* FoldableQuadImageView.h */,
+				9331297E18293BE700F44449 /* FoldableQuadImageView.m */,
 				93345F0118260FB700B1E2B8 /* AppDelegate.h */,
 				93345F0218260FB700B1E2B8 /* AppDelegate.m */,
 				93345F0418260FB700B1E2B8 /* Main.storyboard */,
@@ -262,6 +267,7 @@
 				93345F0318260FB700B1E2B8 /* AppDelegate.m in Sources */,
 				93345EFF18260FB700B1E2B8 /* main.m in Sources */,
 				93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */,
+				9331297F18293BE700F44449 /* FoldableQuadImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,6 +476,7 @@
 				93345F2318260FB700B1E2B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		93345F2418260FB700B1E2B8 /* Build configuration list for PBXNativeTarget "FoldableTests" */ = {
 			isa = XCConfigurationList;
@@ -478,6 +485,7 @@
 				93345F2618260FB700B1E2B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

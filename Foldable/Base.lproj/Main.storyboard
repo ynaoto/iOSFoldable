@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zzs_mochi01.png" translatesAutoresizingMaskIntoConstraints="NO" id="j46-dm-rgq" customClass="QuadImageView">
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zzs_mochi01.png" translatesAutoresizingMaskIntoConstraints="NO" id="j46-dm-rgq" customClass="FoldableQuadImageView">
                                 <rect key="frame" x="20" y="144" width="280" height="280"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <constraints>
@@ -31,9 +31,6 @@
                             <constraint firstAttribute="centerX" secondItem="j46-dm-rgq" secondAttribute="centerX" id="zVn-b0-lEe"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="quadImageView" destination="j46-dm-rgq" id="v2E-dM-ZdJ"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
