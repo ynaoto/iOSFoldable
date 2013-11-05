@@ -15,84 +15,258 @@
 @end
 
 @implementation ViewController
+{
+    BOOL foldedLeftToRight;
+    BOOL foldedRightToLeft;
+    BOOL foldedTopToBottom;
+    BOOL foldedBottomToTop;
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    NSLog(@"%s", __FUNCTION__);
+}
+
+- (void)foldLeftToRight
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = 1.0/500; // make it 3D flavor
+    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 0 * M_PI, 0.0, 1.0, 0.0)];
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 1 * M_PI, 0.0, 1.0, 0.0)];
+    anim.duration = 0.8;
+    anim.repeatCount = 1;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
+    anim.delegate = self;
+    
+    UIView *view;
+    CGRect frame;
+
+    self.quadImageView.topLeftImageView.layer.zPosition = 0;
+    self.quadImageView.topRightImageView.layer.zPosition = 0;
+    self.quadImageView.bottomLeftImageView.layer.zPosition = 0;
+    self.quadImageView.bottomRightImageView.layer.zPosition = 0;
+
+    view = self.quadImageView.topLeftImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(1.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 1.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+
+    view = self.quadImageView.bottomLeftImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(1.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 1.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+
+    foldedLeftToRight = YES;
+}
+
+- (void)foldRightToLeft
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = -1.0/500; // make it 3D flavor
+    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 0 * M_PI, 0.0, 1.0, 0.0)];
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, -1 * M_PI, 0.0, 1.0, 0.0)];
+    anim.duration = 0.8;
+    anim.repeatCount = 1;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
+    anim.delegate = self;
+    
+    UIView *view;
+    CGRect frame;
+    
+    self.quadImageView.topLeftImageView.layer.zPosition = 0;
+    self.quadImageView.topRightImageView.layer.zPosition = 0;
+    self.quadImageView.bottomLeftImageView.layer.zPosition = 0;
+    self.quadImageView.bottomRightImageView.layer.zPosition = 0;
+    
+    view = self.quadImageView.topRightImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(0.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 0.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+
+    view = self.quadImageView.bottomRightImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(0.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 0.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+    
+    foldedRightToLeft = YES;
+}
+
+- (void)unfoldTopToBottom
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    foldedBottomToTop = NO;
+}
+
+- (void)unfoldBottomToTop
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    foldedTopToBottom = NO;
+}
+
+- (void)unfoldLeftToRight
+{
+    NSLog(@"%s", __FUNCTION__);
+ 
+    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = -1.0/500; // make it 3D flavor
+    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, -1 * M_PI, 0.0, 1.0, 0.0)];
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 0 * M_PI, 0.0, 1.0, 0.0)];
+    anim.duration = 0.8;
+    anim.repeatCount = 1;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
+    anim.delegate = self;
+    
+    UIView *view;
+    CGRect frame;
+    
+    self.quadImageView.topLeftImageView.layer.zPosition = 0;
+    self.quadImageView.topRightImageView.layer.zPosition = 0;
+    self.quadImageView.bottomLeftImageView.layer.zPosition = 0;
+    self.quadImageView.bottomRightImageView.layer.zPosition = 0;
+    
+    view = self.quadImageView.topRightImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(0.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 0.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+
+    view = self.quadImageView.bottomRightImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(0.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 0.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+    
+    foldedRightToLeft = NO;
+}
+
+- (void)unfoldRightToLeft
+{
+    NSLog(@"%s", __FUNCTION__);
+
+    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = 1.0/500; // make it 3D flavor
+    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 1 * M_PI, 0.0, 1.0, 0.0)];
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, 0 * M_PI, 0.0, 1.0, 0.0)];
+    anim.duration = 0.8;
+    anim.repeatCount = 1;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
+    anim.delegate = self;
+    
+    UIView *view;
+    CGRect frame;
+    
+    self.quadImageView.topLeftImageView.layer.zPosition = 0;
+    self.quadImageView.topRightImageView.layer.zPosition = 0;
+    self.quadImageView.bottomLeftImageView.layer.zPosition = 0;
+    self.quadImageView.bottomRightImageView.layer.zPosition = 0;
+    
+    view = self.quadImageView.topLeftImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(1.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 1.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+    
+    view = self.quadImageView.bottomLeftImageView;
+    frame = view.frame;
+    view.layer.anchorPoint = CGPointMake(1.0, 0.5);
+    view.layer.position = CGPointMake(frame.origin.x + 1.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
+    view.layer.zPosition = 1000; // 実験して決めた
+    [view.layer addAnimation:anim forKey:nil];
+
+    foldedLeftToRight = NO;
+}
 
 - (void)topLeft:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
-    UIView *view;
-    CGRect frame;
     
-    view = self.quadImageView.topLeftImageView;
-    [self.quadImageView bringSubviewToFront:view];
-    frame = view.frame;
-
-    view.layer.anchorPoint = CGPointMake(1.0, 0.5);
-    view.layer.position = CGPointMake(frame.origin.x + 1.0 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
-    view.layer.zPosition = 1000; // 実験して決めた
-
-    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
-    /*
-    CATransform3D transform = CATransform3DIdentity;
-    transform.m34 = 1.0/500; // make it 3D flavor
-    transform = CATransform3DRotate(transform, M_PI, 0.0, 1.0, 0.0);
-    anim.toValue = [NSNumber valueWithCATransform3D:transform];
-     */
-    //anim.fromValue = [NSNumber numberWithDouble:0];
-    anim.toValue = [NSNumber numberWithDouble:M_PI];
-    anim.valueFunction = [CAValueFunction functionWithName:kCAValueFunctionRotateY];
-    
-    anim.duration = 1.0;
-    anim.repeatCount = 1;
-    anim.cumulative = YES;
-    anim.additive = YES;
-    anim.removedOnCompletion = NO;
-    
-    [view.layer addAnimation:anim forKey:@"a"];
-
-    //view.layer.transform = transform;
-
-    /*
-    view.layer.anchorPoint = CGPointMake(0.5, 0.5);
-    view.layer.position = CGPointMake(frame.origin.x + 0.5 * frame.size.width, frame.origin.y + 0.5 * frame.size.height);
-     */
-
-    /*
-    CGFloat r = M_PI;
-    CGFloat m34 = 1.0/500;
-    
-    //[self.view bringSubviewToFront:view]; // これをやらないと終了時の順番が正しくない
-    //[self.quadImageView bringSubviewToFront:view]; // これをやらないと終了時の順番が正しくない
-    view.layer.zPosition = 1000; // 実験して決めた
-    [UIView animateWithDuration:1.0
-                     animations:^{
-                         CATransform3D transform = CATransform3DIdentity;
-                         transform.m34 = m34; // make it 3D flavor
-                         transform = CATransform3DRotate(transform, r, 0.0, 1.0, 0.0);
-                         view.layer.transform = transform;
-                     }
-                     completion:^(BOOL finished) {
-                         view.layer.zPosition = 0;
-                         //[self.quadImageView bringSubviewToFront:view]; // これをやらないと終了時の順番が正しくない
-                         view.layer.anchorPoint = CGPointMake(0.5, 0.5);
-                         //view.layer.position = CGPointMake(frame.origin.x + 3 * frame.size.width / 2, frame.origin.y + frame.size.height / 2);
-                     }
-     ];
-     */
+    if (foldedLeftToRight) {
+        // do nothing
+    } else if (foldedRightToLeft) {
+        [self unfoldLeftToRight];
+    } else if (foldedTopToBottom) {
+        // do nothing
+    } else if (foldedBottomToTop) {
+        [self unfoldTopToBottom];
+    } else {
+        [self foldLeftToRight];
+    }
 }
 
 - (void)topRight:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
+    
+    if (foldedLeftToRight) {
+        [self unfoldRightToLeft];
+    } else if (foldedRightToLeft) {
+        // do nothing
+    } else if (foldedTopToBottom) {
+        // do nothing
+    } else if (foldedBottomToTop) {
+        [self unfoldTopToBottom];
+    } else {
+        [self foldRightToLeft];
+    }
 }
 
 - (void)bottomLeft:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
+    
+    if (foldedLeftToRight) {
+        // do nothing
+    } else if (foldedRightToLeft) {
+        [self unfoldLeftToRight];
+    } else if (foldedTopToBottom) {
+        [self unfoldBottomToTop];
+    } else if (foldedBottomToTop) {
+        // do nothing
+    } else {
+        [self foldLeftToRight];
+    }
 }
 
 - (void)bottomRight:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
+    
+    if (foldedLeftToRight) {
+        [self unfoldRightToLeft];
+    } else if (foldedRightToLeft) {
+        // do nothing
+    } else if (foldedTopToBottom) {
+        [self unfoldBottomToTop];
+    } else if (foldedBottomToTop) {
+        // do nothing
+    } else {
+        [self foldRightToLeft];
+    }
 }
 
 - (void)viewDidLoad
