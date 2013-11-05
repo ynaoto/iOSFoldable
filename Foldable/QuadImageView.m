@@ -10,66 +10,93 @@
 
 @implementation QuadImageView
 
-- (UIImageView*)setupQuaterImageView:(CGRect)frame srcImageRef:(CGImageRef)srcImageRef
-{
-    UIImageView *view = [[UIImageView alloc] initWithFrame:frame];
-    view.contentMode = UIViewContentModeTopLeft; // イメージの拡縮を行わない
-    //view.clipsToBounds = YES; // フレームをはみ出したところは切り取る(今回はフレームに合わせてイメージを切り取るので不要)
-    CGImageRef trimmedImageRef = CGImageCreateWithImageInRect(srcImageRef, frame); // 元イメージから切り取る
-    view.image = [UIImage imageWithCGImage:trimmedImageRef];
-    return view;
-}
-
 - (void)setupQuadImageViews
 {
     CGRect bounds = self.bounds;
     CGFloat w = bounds.size.width / 2;
     CGFloat h = bounds.size.height / 2;
 
-    // 変形済みイメージを取得する
-    UIGraphicsBeginImageContext(bounds.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [self.layer renderInContext:context];
-    UIImage *srcImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    CGImageRef srcImageRef = [srcImage CGImage];
-
-    _topLeftImageView     = [self setupQuaterImageView:CGRectMake(0, 0, w, h) srcImageRef:srcImageRef];
-    _topRightImageView    = [self setupQuaterImageView:CGRectMake(w, 0, w, h) srcImageRef:srcImageRef];
-    _bottomLeftImageView  = [self setupQuaterImageView:CGRectMake(0, h, w, h) srcImageRef:srcImageRef];
-    _bottomRightImageView = [self setupQuaterImageView:CGRectMake(w, h, w, h) srcImageRef:srcImageRef];
+    _topLeftImageView     = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+    _topRightImageView    = [[UIImageView alloc] initWithFrame:CGRectMake(w, 0, w, h)];
+    _bottomLeftImageView  = [[UIImageView alloc] initWithFrame:CGRectMake(0, h, w, h)];
+    _bottomRightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(w, h, w, h)];
 
     [self addSubview:self.topLeftImageView];
     [self addSubview:self.topRightImageView];
     [self addSubview:self.bottomLeftImageView];
     [self addSubview:self.bottomRightImageView];
+}
+
+- (void)setupQuadImages
+{
+    // 変形済みイメージを取得する
+    UIGraphicsBeginImageContext(self.bounds.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [self.layer renderInContext:context];
+    UIImage *srcImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    UIImageView *view;
+    
+    view = self.topLeftImageView;
+    view.contentMode = UIViewContentModeTopLeft;
+    view.clipsToBounds = YES;
+    view.image = srcImage;
+    
+    view = self.topRightImageView;
+    view.contentMode = UIViewContentModeTopRight;
+    view.clipsToBounds = YES;
+    view.image = srcImage;
+    
+    view = self.bottomLeftImageView;
+    view.contentMode = UIViewContentModeBottomLeft;
+    view.clipsToBounds = YES;
+    view.image = srcImage;
+    
+    view = self.bottomRightImageView;
+    view.contentMode = UIViewContentModeBottomRight;
+    view.clipsToBounds = YES;
+    view.image = srcImage;
 
     self.image = nil;
 }
 
-/*
-- (id)initWithFrame:(CGRect)frame
+- (void)setImage:(UIImage *)image
 {
-    NSLog(@"%s", __FUNCTION__);
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-        [self makeQuadImageViews];
+    NSLog(@"%s: %@", __FUNCTION__, image);
+    [super setImage:image];
+    if (image) {
+        [self setupQuadImages];
     }
-    return self;
 }
- */
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     NSLog(@"%s", __FUNCTION__);
     self = [super initWithCoder:aDecoder];
     if (self) {
-        // Initialization code
         [self setupQuadImageViews];
+        [self setImage:self.image]; // initWithCoder では setImage: の呼び出しが行われないので、強制的に呼び出す。
     }
     return self;
 }
+
+/*
+- (id)initWithFrame:(CGRect)frame
+{
+    NSLog(@"%s", __FUNCTION__);
+}
+
+- (id)initWithImage:(UIImage *)image
+{
+    NSLog(@"%s", __FUNCTION__);
+}
+
+- (id)initWithImage:(UIImage *)image highlightedImage:(UIImage *)highlightedImage
+{
+    NSLog(@"%s", __FUNCTION__);
+}
+*/
 
 /*
 - (id)initWithImage:(UIImage *)image
