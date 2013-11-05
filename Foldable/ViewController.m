@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "QuadImageView.h"
 
-@interface ViewController ()
+@interface ViewController () <UIGestureRecognizerDelegate>
 @property (weak, nonatomic) IBOutlet QuadImageView *quadImageView;
 
 @end
@@ -20,6 +20,22 @@
     BOOL foldedRightToLeft;
     BOOL foldedTopToBottom;
     BOOL foldedBottomToTop;
+}
+
+- (CABasicAnimation*)setupXRotationAnimationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
+{
+    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
+    
+    CATransform3D transform = CATransform3DIdentity;
+    transform.m34 = m34; // make it 3D flavor
+    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, from, 1.0, 0.0, 0.0)];
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, to, 1.0, 0.0, 0.0)];
+    anim.duration = 0.8;
+    anim.repeatCount = 1;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
+    
+    return anim;
 }
 
 - (CABasicAnimation*)setupYRotationAnimationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
@@ -54,6 +70,18 @@
                                       frame.origin.y + anchorPoint.y * frame.size.height);
     view.layer.zPosition = 1000; // 実験して決めた
     [view.layer addAnimation:anim forKey:nil];
+}
+
+- (void)foldTopToBottom
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:M_PI m34:-1.0/500];
+    [self resetZPosition];
+    [self applyAnimation:anim view:self.quadImageView.topLeftImageView anchorPoint:CGPointMake(0.5, 1.0)];
+    [self applyAnimation:anim view:self.quadImageView.topRightImageView anchorPoint:CGPointMake(0.5, 1.0)];
+    
+    foldedLeftToRight = YES;
 }
 
 - (void)foldLeftToRight
@@ -135,6 +163,11 @@
     }
 }
 
+- (void)topLeftSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
+{
+    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+}
+
 - (void)topRight:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
@@ -150,6 +183,11 @@
     } else {
         [self foldRightToLeft];
     }
+}
+
+- (void)topRightSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
+{
+    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
 }
 
 - (void)bottomLeft:(UITapGestureRecognizer*)gestureRecognizer
@@ -169,6 +207,11 @@
     }
 }
 
+- (void)bottomLeftSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
+{
+    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+}
+
 - (void)bottomRight:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
@@ -186,6 +229,44 @@
     }
 }
 
+- (void)bottomRightSwipe:(UISwipeGestureRecognizer*)gestureRecognizer
+{
+    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+- (void)setupGestureRecognizers:(UIView*)view tapAction:(SEL)tapAction swipeAction:(SEL)swipeAction
+{
+    UIGestureRecognizer *gestureRecognizer;
+    
+    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:tapAction];
+    [view addGestureRecognizer:gestureRecognizer];
+    
+    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionRight;
+    [view addGestureRecognizer:gestureRecognizer];
+    
+    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionLeft;
+    [view addGestureRecognizer:gestureRecognizer];
+    
+    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionUp;
+    [view addGestureRecognizer:gestureRecognizer];
+    
+    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionDown;
+    [view addGestureRecognizer:gestureRecognizer];
+    
+    for (UIGestureRecognizer *g in view.gestureRecognizers) {
+        g.delegate = self;
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -196,19 +277,21 @@
     self.quadImageView.bottomLeftImageView.userInteractionEnabled = YES;
     self.quadImageView.bottomRightImageView.userInteractionEnabled = YES;
     
-    UITapGestureRecognizer *gestureRecognizer;
-    
-    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(topLeft:)];
-    [self.quadImageView.topLeftImageView addGestureRecognizer:gestureRecognizer];
-    
-    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(topRight:)];
-    [self.quadImageView.topRightImageView addGestureRecognizer:gestureRecognizer];
-    
-    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(bottomLeft:)];
-    [self.quadImageView.bottomLeftImageView addGestureRecognizer:gestureRecognizer];
-    
-    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(bottomRight:)];
-    [self.quadImageView.bottomRightImageView addGestureRecognizer:gestureRecognizer];
+    [self setupGestureRecognizers:self.quadImageView.topLeftImageView
+                        tapAction:@selector(topLeft:)
+                      swipeAction:@selector(topLeftSwipe:)];
+
+    [self setupGestureRecognizers:self.quadImageView.topRightImageView
+                        tapAction:@selector(topRight:)
+                      swipeAction:@selector(topRightSwipe:)];
+
+    [self setupGestureRecognizers:self.quadImageView.bottomLeftImageView
+                        tapAction:@selector(bottomLeft:)
+                      swipeAction:@selector(bottomLeftSwipe:)];
+
+    [self setupGestureRecognizers:self.quadImageView.bottomRightImageView
+                        tapAction:@selector(bottomRight:)
+                      swipeAction:@selector(bottomRightSwipe:)];
 }
 
 - (void)didReceiveMemoryWarning
