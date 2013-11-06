@@ -76,8 +76,8 @@
     
     CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:M_PI m34:-1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(0.5, 1.0)];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.5, 1.0)];
+    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
+    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
     
     foldedTopToBottom = YES;
 }
@@ -88,8 +88,8 @@
     
     CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:-M_PI m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(0.5, 0.0)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.5, 0.0)];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedBottomToTop = YES;
 }
@@ -100,8 +100,8 @@
     
     CABasicAnimation *anim = [self setupYRotationAnimationFrom:0 to:M_PI m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 0.5)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.5)];
+    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
     
     foldedLeftToRight = YES;
 }
@@ -112,8 +112,8 @@
     
     CABasicAnimation *anim = [self setupYRotationAnimationFrom:0 to:-M_PI m34:-1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 0.5)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.5)];
+    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedRightToLeft = YES;
 }
@@ -124,8 +124,8 @@
 
     CABasicAnimation *anim = [self setupXRotationAnimationFrom:-M_PI to:0 m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.5, 0.0)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(0.5, 0.0)];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
 
     foldedBottomToTop = NO;
 }
@@ -136,8 +136,8 @@
 
     CABasicAnimation *anim = [self setupXRotationAnimationFrom:M_PI to:0 m34:-1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.5, 1.0)];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(0.5, 1.0)];
+    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
+    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
 
     foldedTopToBottom = NO;
 }
@@ -148,8 +148,8 @@
     
     CABasicAnimation *anim = [self setupYRotationAnimationFrom:-M_PI to:0 m34:-1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 0.5)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.5)];
+    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
+    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedRightToLeft = NO;
 }
@@ -160,8 +160,8 @@
     
     CABasicAnimation *anim = [self setupYRotationAnimationFrom:M_PI to:0 m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 0.5)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.5)];
+    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
+    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
     
     foldedLeftToRight = NO;
 }
