@@ -64,9 +64,9 @@
 
 @implementation UIView (Foldable)
 
-static const void *kFolded = "kFolded";
-static const void *kUnfoldAnim = "kUnfoldAnim";
-static const void *kAnchorPoint = "kAnchorPoint";
+static const void *kFolded = &kFolded;
+static const void *kUnfoldAnim = &kUnfoldAnim;
+static const void *kAnchorPoint = &kAnchorPoint;
 
 - (BOOL)folded
 {
