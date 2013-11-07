@@ -7,20 +7,18 @@
 //
 
 #import "FoldableQuadImageView.h"
+#import <objc/runtime.h>
 
-@interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
+@interface CABasicAnimation (XYRotation)
+
++ (CABasicAnimation*)makeXRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34;
++ (CABasicAnimation*)makeYRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34;
 
 @end
 
-@implementation FoldableQuadImageView
-{
-    BOOL foldedLeftToRight;
-    BOOL foldedRightToLeft;
-    BOOL foldedTopToBottom;
-    BOOL foldedBottomToTop;
-}
+@implementation CABasicAnimation (XYRotation)
 
-- (CABasicAnimation*)setupXRotationAnimationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
++ (CABasicAnimation*)makeXRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
 {
     CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
     
@@ -36,7 +34,7 @@
     return anim;
 }
 
-- (CABasicAnimation*)setupYRotationAnimationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
++ (CABasicAnimation*)makeYRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
 {
     CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
     
@@ -52,6 +50,90 @@
     return anim;
 }
 
+@end
+
+@interface FoldController : NSObject
+@property (weak, nonatomic) UIView *target;
+@property (nonatomic) BOOL folded;
+
+- (id)initWithTarget:(UIView*)target;
+- (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint;
+- (void)unfold;
+
+@end
+
+@implementation FoldController
+{
+    CABasicAnimation *_unfoldAnim;
+    CGPoint _anchorPoint;
+}
+
+- (id)initWithTarget:(id)target
+{
+    self = [super init];
+    if (self) {
+        self.target = target;
+    }
+    return self;
+}
+
+- (void)applyAnimation:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
+{
+    CGRect frame = self.target.frame;
+    self.target.layer.anchorPoint = anchorPoint;
+    self.target.layer.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
+                                             frame.origin.y + anchorPoint.y * frame.size.height);
+    self.target.layer.zPosition = 1000; // 実験して決めた
+    [self.target.layer addAnimation:anim forKey:nil];
+}
+
+- (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
+{
+    if (self.folded) {
+        NSLog(@"warning: the view has been folded");
+        return;
+    }
+    
+    [self applyAnimation:anim anchorPoint:anchorPoint];
+    
+    self.folded = YES;
+    _unfoldAnim = [anim copy];
+    NSNumber *tmp = anim.fromValue;
+    _unfoldAnim.fromValue = anim.toValue;
+    _unfoldAnim.toValue = tmp;
+    _anchorPoint = anchorPoint;
+}
+
+- (void)unfold
+{
+    if (!self.folded) {
+        NSLog(@"warning: the view has not been folded");
+        return;
+    }
+    
+    [self applyAnimation:_unfoldAnim anchorPoint:_anchorPoint];
+    
+    self.folded = NO;
+}
+
+@end
+
+@interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
+
+@end
+
+@implementation FoldableQuadImageView
+{
+    BOOL foldedLeftToRight;
+    BOOL foldedRightToLeft;
+    BOOL foldedTopToBottom;
+    BOOL foldedBottomToTop;
+    FoldController *topLeftImageViewFoldController;
+    FoldController *topRightImageViewFoldController;
+    FoldController *bottomLeftImageViewFoldController;
+    FoldController *bottomRightImageViewFoldController;
+}
+
 - (void)resetZPosition
 {
     self.topLeftImageView.layer.zPosition = 0;
@@ -60,116 +142,102 @@
     self.bottomRightImageView.layer.zPosition = 0;
 }
 
-- (void)applyAnimation:(CABasicAnimation*)anim view:(UIView*)view anchorPoint:(CGPoint)anchorPoint
-{
-    CGRect frame = view.frame;
-    view.layer.anchorPoint = anchorPoint;
-    view.layer.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
-                                      frame.origin.y + anchorPoint.y * frame.size.height);
-    view.layer.zPosition = 1000; // 実験して決めた
-    [view.layer addAnimation:anim forKey:nil];
-}
-
 - (void)foldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:M_PI m34:-1.0/500];
+    CABasicAnimation *foldDownAnim = [CABasicAnimation makeXRotationFrom:0 to:M_PI m34:-1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
+    [topLeftImageViewFoldController fold:foldDownAnim anchorPoint:CGPointMake(1.0, 1.0)];
+    [topRightImageViewFoldController fold:foldDownAnim anchorPoint:CGPointMake(0.0, 1.0)];
     
     foldedTopToBottom = YES;
+}
+
+- (void)unfoldBottomToTop
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    [self resetZPosition];
+    [topRightImageViewFoldController unfold];
+    [topLeftImageViewFoldController unfold];
+    
+    foldedTopToBottom = NO;
 }
 
 - (void)foldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *anim = [self setupXRotationAnimationFrom:0 to:-M_PI m34:1.0/500];
+    CABasicAnimation *foldUpAnim = [CABasicAnimation makeXRotationFrom:0 to:-M_PI m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
+    [bottomLeftImageViewFoldController fold:foldUpAnim anchorPoint:CGPointMake(1.0, 0.0)];
+    [bottomRightImageViewFoldController fold:foldUpAnim anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedBottomToTop = YES;
+}
+
+- (void)unfoldTopToBottom
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    [self resetZPosition];
+    [bottomRightImageViewFoldController unfold];
+    [bottomLeftImageViewFoldController unfold];
+    
+    foldedBottomToTop = NO;
 }
 
 - (void)foldLeftToRight
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *anim = [self setupYRotationAnimationFrom:0 to:M_PI m34:1.0/500];
+    CABasicAnimation *foldRightAnim = [CABasicAnimation makeYRotationFrom:0 to:M_PI m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
+    [topLeftImageViewFoldController fold:foldRightAnim anchorPoint:CGPointMake(1.0, 1.0)];
+    [bottomLeftImageViewFoldController fold:foldRightAnim anchorPoint:CGPointMake(1.0, 0.0)];
     
     foldedLeftToRight = YES;
-}
-
-- (void)foldRightToLeft
-{
-    NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *anim = [self setupYRotationAnimationFrom:0 to:-M_PI m34:-1.0/500];
-    [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
-    
-    foldedRightToLeft = YES;
-}
-
-- (void)unfoldTopToBottom
-{
-    NSLog(@"%s", __FUNCTION__);
-
-    CABasicAnimation *anim = [self setupXRotationAnimationFrom:-M_PI to:0 m34:1.0/500];
-    [self resetZPosition];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
-
-    foldedBottomToTop = NO;
-}
-
-- (void)unfoldBottomToTop
-{
-    NSLog(@"%s", __FUNCTION__);
-
-    CABasicAnimation *anim = [self setupXRotationAnimationFrom:M_PI to:0 m34:-1.0/500];
-    [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
-
-    foldedTopToBottom = NO;
-}
-
-- (void)unfoldLeftToRight
-{
-    NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *anim = [self setupYRotationAnimationFrom:-M_PI to:0 m34:-1.0/500];
-    [self resetZPosition];
-    [self applyAnimation:anim view:self.topRightImageView anchorPoint:CGPointMake(0.0, 1.0)];
-    [self applyAnimation:anim view:self.bottomRightImageView anchorPoint:CGPointMake(0.0, 0.0)];
-    
-    foldedRightToLeft = NO;
 }
 
 - (void)unfoldRightToLeft
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *anim = [self setupYRotationAnimationFrom:M_PI to:0 m34:1.0/500];
     [self resetZPosition];
-    [self applyAnimation:anim view:self.topLeftImageView anchorPoint:CGPointMake(1.0, 1.0)];
-    [self applyAnimation:anim view:self.bottomLeftImageView anchorPoint:CGPointMake(1.0, 0.0)];
+    [topLeftImageViewFoldController unfold];
+    [bottomLeftImageViewFoldController unfold];
     
     foldedLeftToRight = NO;
+}
+
+- (void)foldRightToLeft
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    CABasicAnimation *foldLeftAnim = [CABasicAnimation makeYRotationFrom:0 to:-M_PI m34:-1.0/500];
+    [self resetZPosition];
+    [topRightImageViewFoldController fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 1.0)];
+    [bottomRightImageViewFoldController fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 0.0)];
+    
+    foldedRightToLeft = YES;
+}
+
+- (void)unfoldLeftToRight
+{
+    NSLog(@"%s", __FUNCTION__);
+    
+    [self resetZPosition];
+    [topRightImageViewFoldController unfold];
+    [bottomRightImageViewFoldController unfold];
+    
+    foldedRightToLeft = NO;
 }
 
 - (void)topLeft:(UITapGestureRecognizer*)gestureRecognizer
 {
     NSLog(@"%s", __FUNCTION__);
-    
+
     if (foldedLeftToRight) {
         // do nothing
     } else if (foldedRightToLeft) {
@@ -375,6 +443,11 @@
         self.topRightImageView.userInteractionEnabled = YES;
         self.bottomLeftImageView.userInteractionEnabled = YES;
         self.bottomRightImageView.userInteractionEnabled = YES;
+        
+        topLeftImageViewFoldController = [[FoldController alloc] initWithTarget:self.topLeftImageView];
+        topRightImageViewFoldController = [[FoldController alloc] initWithTarget:self.topRightImageView];
+        bottomLeftImageViewFoldController = [[FoldController alloc] initWithTarget:self.bottomLeftImageView];
+        bottomRightImageViewFoldController = [[FoldController alloc] initWithTarget:self.bottomRightImageView];
         
         [self setupGestureRecognizers:self.topLeftImageView
                             tapAction:@selector(topLeft:)
