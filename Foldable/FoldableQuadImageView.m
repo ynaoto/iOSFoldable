@@ -52,39 +52,60 @@
 
 @end
 
-@interface FoldController : NSObject
-@property (weak, nonatomic) UIView *target;
+@interface UIView (Foldable)
 @property (nonatomic) BOOL folded;
+@property (nonatomic) CABasicAnimation *unfoldAnim;
+@property (nonatomic) CGPoint anchorPoint;
 
-- (id)initWithTarget:(UIView*)target;
 - (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint;
 - (void)unfold;
 
 @end
 
-@implementation FoldController
+@implementation UIView (Foldable)
+
+static const void *kFolded = "kFolded";
+static const void *kUnfoldAnim = "kUnfoldAnim";
+static const void *kAnchorPoint = "kAnchorPoint";
+
+- (BOOL)folded
 {
-    CABasicAnimation *_unfoldAnim;
-    CGPoint _anchorPoint;
+    return [objc_getAssociatedObject(self, kFolded) boolValue];
 }
 
-- (id)initWithTarget:(id)target
+- (void)setFolded:(BOOL)folded
 {
-    self = [super init];
-    if (self) {
-        self.target = target;
-    }
-    return self;
+    objc_setAssociatedObject(self, kFolded, [NSNumber numberWithBool:folded], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (CABasicAnimation *)unfoldAnim
+{
+    return objc_getAssociatedObject(self, kUnfoldAnim);
+}
+
+- (void)setUnfoldAnim:(CABasicAnimation *)unfoldAnim
+{
+    objc_setAssociatedObject(self, kUnfoldAnim, unfoldAnim, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (CGPoint)anchorPoint
+{
+    return [objc_getAssociatedObject(self, kAnchorPoint) CGPointValue];
+}
+
+- (void)setAnchorPoint:(CGPoint)anchorPoint
+{
+    objc_setAssociatedObject(self, kAnchorPoint, [CIVector vectorWithCGPoint:anchorPoint], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)applyAnimation:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
 {
-    CGRect frame = self.target.frame;
-    self.target.layer.anchorPoint = anchorPoint;
-    self.target.layer.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
+    CGRect frame = self.frame;
+    self.layer.anchorPoint = anchorPoint;
+    self.layer.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
                                              frame.origin.y + anchorPoint.y * frame.size.height);
-    self.target.layer.zPosition = 1000; // 実験して決めた
-    [self.target.layer addAnimation:anim forKey:nil];
+    self.layer.zPosition = 1000; // 実験して決めた
+    [self.layer addAnimation:anim forKey:nil];
 }
 
 - (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
@@ -97,11 +118,11 @@
     [self applyAnimation:anim anchorPoint:anchorPoint];
     
     self.folded = YES;
-    _unfoldAnim = [anim copy];
+    self.unfoldAnim = [anim copy];
     NSNumber *tmp = anim.fromValue;
-    _unfoldAnim.fromValue = anim.toValue;
-    _unfoldAnim.toValue = tmp;
-    _anchorPoint = anchorPoint;
+    self.unfoldAnim.fromValue = anim.toValue;
+    self.unfoldAnim.toValue = tmp;
+    self.anchorPoint = anchorPoint;
 }
 
 - (void)unfold
@@ -111,7 +132,7 @@
         return;
     }
     
-    [self applyAnimation:_unfoldAnim anchorPoint:_anchorPoint];
+    [self applyAnimation:self.unfoldAnim anchorPoint:self.anchorPoint];
     
     self.folded = NO;
 }
@@ -128,10 +149,6 @@
     BOOL foldedRightToLeft;
     BOOL foldedTopToBottom;
     BOOL foldedBottomToTop;
-    FoldController *topLeftImageViewFoldController;
-    FoldController *topRightImageViewFoldController;
-    FoldController *bottomLeftImageViewFoldController;
-    FoldController *bottomRightImageViewFoldController;
 }
 
 - (void)resetZPosition
@@ -148,8 +165,8 @@
     
     CABasicAnimation *foldDownAnim = [CABasicAnimation makeXRotationFrom:0 to:M_PI m34:-1.0/500];
     [self resetZPosition];
-    [topLeftImageViewFoldController fold:foldDownAnim anchorPoint:CGPointMake(1.0, 1.0)];
-    [topRightImageViewFoldController fold:foldDownAnim anchorPoint:CGPointMake(0.0, 1.0)];
+    [self.topLeftImageView fold:foldDownAnim anchorPoint:CGPointMake(1.0, 1.0)];
+    [self.topRightImageView fold:foldDownAnim anchorPoint:CGPointMake(0.0, 1.0)];
     
     foldedTopToBottom = YES;
 }
@@ -159,8 +176,8 @@
     NSLog(@"%s", __FUNCTION__);
     
     [self resetZPosition];
-    [topRightImageViewFoldController unfold];
-    [topLeftImageViewFoldController unfold];
+    [self.topRightImageView unfold];
+    [self.topLeftImageView unfold];
     
     foldedTopToBottom = NO;
 }
@@ -171,8 +188,8 @@
     
     CABasicAnimation *foldUpAnim = [CABasicAnimation makeXRotationFrom:0 to:-M_PI m34:1.0/500];
     [self resetZPosition];
-    [bottomLeftImageViewFoldController fold:foldUpAnim anchorPoint:CGPointMake(1.0, 0.0)];
-    [bottomRightImageViewFoldController fold:foldUpAnim anchorPoint:CGPointMake(0.0, 0.0)];
+    [self.bottomLeftImageView fold:foldUpAnim anchorPoint:CGPointMake(1.0, 0.0)];
+    [self.bottomRightImageView fold:foldUpAnim anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedBottomToTop = YES;
 }
@@ -182,8 +199,8 @@
     NSLog(@"%s", __FUNCTION__);
     
     [self resetZPosition];
-    [bottomRightImageViewFoldController unfold];
-    [bottomLeftImageViewFoldController unfold];
+    [self.bottomRightImageView unfold];
+    [self.bottomLeftImageView unfold];
     
     foldedBottomToTop = NO;
 }
@@ -194,8 +211,8 @@
     
     CABasicAnimation *foldRightAnim = [CABasicAnimation makeYRotationFrom:0 to:M_PI m34:1.0/500];
     [self resetZPosition];
-    [topLeftImageViewFoldController fold:foldRightAnim anchorPoint:CGPointMake(1.0, 1.0)];
-    [bottomLeftImageViewFoldController fold:foldRightAnim anchorPoint:CGPointMake(1.0, 0.0)];
+    [self.topLeftImageView fold:foldRightAnim anchorPoint:CGPointMake(1.0, 1.0)];
+    [self.bottomLeftImageView fold:foldRightAnim anchorPoint:CGPointMake(1.0, 0.0)];
     
     foldedLeftToRight = YES;
 }
@@ -205,8 +222,8 @@
     NSLog(@"%s", __FUNCTION__);
     
     [self resetZPosition];
-    [topLeftImageViewFoldController unfold];
-    [bottomLeftImageViewFoldController unfold];
+    [self.topLeftImageView unfold];
+    [self.bottomLeftImageView unfold];
     
     foldedLeftToRight = NO;
 }
@@ -217,8 +234,8 @@
     
     CABasicAnimation *foldLeftAnim = [CABasicAnimation makeYRotationFrom:0 to:-M_PI m34:-1.0/500];
     [self resetZPosition];
-    [topRightImageViewFoldController fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 1.0)];
-    [bottomRightImageViewFoldController fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 0.0)];
+    [self.topRightImageView fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 1.0)];
+    [self.bottomRightImageView fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 0.0)];
     
     foldedRightToLeft = YES;
 }
@@ -228,8 +245,8 @@
     NSLog(@"%s", __FUNCTION__);
     
     [self resetZPosition];
-    [topRightImageViewFoldController unfold];
-    [bottomRightImageViewFoldController unfold];
+    [self.topRightImageView unfold];
+    [self.bottomRightImageView unfold];
     
     foldedRightToLeft = NO;
 }
@@ -443,11 +460,6 @@
         self.topRightImageView.userInteractionEnabled = YES;
         self.bottomLeftImageView.userInteractionEnabled = YES;
         self.bottomRightImageView.userInteractionEnabled = YES;
-        
-        topLeftImageViewFoldController = [[FoldController alloc] initWithTarget:self.topLeftImageView];
-        topRightImageViewFoldController = [[FoldController alloc] initWithTarget:self.topRightImageView];
-        bottomLeftImageViewFoldController = [[FoldController alloc] initWithTarget:self.bottomLeftImageView];
-        bottomRightImageViewFoldController = [[FoldController alloc] initWithTarget:self.bottomRightImageView];
         
         [self setupGestureRecognizers:self.topLeftImageView
                             tapAction:@selector(topLeft:)
