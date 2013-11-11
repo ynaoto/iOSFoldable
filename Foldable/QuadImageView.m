@@ -9,6 +9,32 @@
 #import "QuadImageView.h"
 
 @implementation QuadImageView
+{
+    UIImageView *_topLeftImageView;
+    UIImageView *_topRightImageView;
+    UIImageView *_bottomLeftImageView;
+    UIImageView *_bottomRightImageView;
+}
+
+- (CALayer *)topLeftLayer
+{
+    return _topLeftImageView.layer;
+}
+
+- (CALayer *)topRightLayer
+{
+    return _topRightImageView.layer;
+}
+
+- (CALayer *)bottomLeftLayer
+{
+    return _bottomLeftImageView.layer;
+}
+
+- (CALayer *)bottomRightLayer
+{
+    return _bottomRightImageView.layer;
+}
 
 - (void)setupQuadImageViews
 {
@@ -21,10 +47,10 @@
     _bottomLeftImageView  = [[UIImageView alloc] initWithFrame:CGRectMake(0, h, w, h)];
     _bottomRightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(w, h, w, h)];
 
-    [self addSubview:self.topLeftImageView];
-    [self addSubview:self.topRightImageView];
-    [self addSubview:self.bottomLeftImageView];
-    [self addSubview:self.bottomRightImageView];
+    [self addSubview:_topLeftImageView];
+    [self addSubview:_topRightImageView];
+    [self addSubview:_bottomLeftImageView];
+    [self addSubview:_bottomRightImageView];
 }
 
 - (void)setupQuadImages
@@ -38,22 +64,22 @@
     
     UIImageView *view;
     
-    view = self.topLeftImageView;
+    view = _topLeftImageView;
     view.contentMode = UIViewContentModeTopLeft;
     view.clipsToBounds = YES;
     view.image = srcImage;
     
-    view = self.topRightImageView;
+    view = _topRightImageView;
     view.contentMode = UIViewContentModeTopRight;
     view.clipsToBounds = YES;
     view.image = srcImage;
     
-    view = self.bottomLeftImageView;
+    view = _bottomLeftImageView;
     view.contentMode = UIViewContentModeBottomLeft;
     view.clipsToBounds = YES;
     view.image = srcImage;
     
-    view = self.bottomRightImageView;
+    view = _bottomRightImageView;
     view.contentMode = UIViewContentModeBottomRight;
     view.clipsToBounds = YES;
     view.image = srcImage;
