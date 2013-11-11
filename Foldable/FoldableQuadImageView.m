@@ -28,8 +28,8 @@
     anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, to, 1.0, 0.0, 0.0)];
     anim.duration = 0.8;
     anim.repeatCount = 1;
-//    anim.fillMode = kCAFillModeForwards;
-//    anim.removedOnCompletion = NO;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
     
     return anim;
 }
@@ -44,8 +44,8 @@
     anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, to, 0.0, 1.0, 0.0)];
     anim.duration = 0.8;
     anim.repeatCount = 1;
-//    anim.fillMode = kCAFillModeForwards;
-//    anim.removedOnCompletion = NO;
+    anim.fillMode = kCAFillModeForwards;
+    anim.removedOnCompletion = NO;
     
     return anim;
 }
@@ -98,36 +98,14 @@ static const void *kAnchorPoint = &kAnchorPoint;
     objc_setAssociatedObject(self, kAnchorPoint, [CIVector vectorWithCGPoint:anchorPoint], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (void)animationDidStop:(CABasicAnimation *)anim finished:(BOOL)flag
-{
-    NSLog(@"%s: finished = %d", __FUNCTION__, flag);
-    NSLog(@"before %@", [NSValue valueWithCGRect:self.frame]);
-    self.transform = CATransform3DGetAffineTransform([anim.toValue CATransform3DValue]);
-    NSLog(@"after  %@", [NSValue valueWithCGRect:self.frame]);
-//    [self.layer removeAllAnimations];
-    [self.superview bringSubviewToFront:self];
-}
-
 - (void)applyAnimation:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
 {
     CGRect frame = self.frame;
     self.layer.anchorPoint = anchorPoint;
     self.layer.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
                                       frame.origin.y + anchorPoint.y * frame.size.height);
-//    self.layer.anchorPoint = CGPointApplyAffineTransform(self.layer.anchorPoint, self.transform);
-//    self.layer.position = CGPointApplyAffineTransform(self.layer.position, self.transform);
     self.layer.zPosition = 1000; // 実験して決めた
-    anim.delegate = self;
     [self.layer addAnimation:anim forKey:nil];
-//    self.layer.transform = [anim.fromValue CATransform3DValue];
-//    [UIView animateWithDuration:0.8
-//                     animations:^{
-//                         CATransform3D transform = [anim.toValue CATransform3DValue];
-//                         self.layer.transform = transform;
-//                     }
-//                     completion:^(BOOL finished) {
-//                         [self.superview bringSubviewToFront:self];
-//                     }];
 }
 
 - (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
@@ -141,11 +119,10 @@ static const void *kAnchorPoint = &kAnchorPoint;
     
     self.folded = YES;
     self.unfoldAnim = [anim copy];
-//    NSNumber *tmp = anim.fromValue;
-//    self.unfoldAnim.fromValue = anim.toValue;
-//    self.unfoldAnim.toValue = tmp;
-//    //self.anchorPoint = anchorPoint;
-//    self.anchorPoint = CGPointMake(0, 0);
+    NSNumber *tmp = anim.fromValue;
+    self.unfoldAnim.fromValue = anim.toValue;
+    self.unfoldAnim.toValue = tmp;
+    self.anchorPoint = anchorPoint;
 }
 
 - (void)unfold
@@ -155,7 +132,6 @@ static const void *kAnchorPoint = &kAnchorPoint;
         return;
     }
 
-//    self.transform = CGAffineTransformIdentity;
     [self applyAnimation:self.unfoldAnim anchorPoint:self.anchorPoint];
     
     self.folded = NO;
@@ -273,87 +249,6 @@ static const void *kAnchorPoint = &kAnchorPoint;
     [self.bottomRightImageView unfold];
     
     foldedRightToLeft = NO;
-}
-
-- (void)tap:(UITapGestureRecognizer*)gestureRecognizer
-{
-    UIView *view = gestureRecognizer.view;
-    NSLog(@"%s: %@", __FUNCTION__, view);
-
-    [self resetZPosition];
-    
-    if (view == self.topLeftImageView) {
-        NSLog(@"topLeftImageView");
-        if (!view.folded) {
-            [self foldLeftToRight];
-        } else if (foldedRightToLeft) {
-            [self unfoldRightToLeft];
-        } else if (foldedBottomToTop) {
-            [self unfoldBottomToTop];
-        } else {
-            [view unfold];
-        }
-    } else if (view == self.topRightImageView) {
-        NSLog(@"topRightImageView");
-        if (!view.folded) {
-            [self foldRightToLeft];
-        } else if (foldedLeftToRight) {
-            [self unfoldLeftToRight];
-        } else if (foldedBottomToTop) {
-            [self unfoldBottomToTop];
-        }
-    } else if (view == self.bottomLeftImageView) {
-        NSLog(@"bottomLeftImageView");
-        if (!view.folded) {
-            [self foldLeftToRight];
-        } else if (foldedRightToLeft) {
-            [self unfoldRightToLeft];
-        } else if (foldedTopToBottom) {
-            [self unfoldTopToBottom];
-        }
-    } else if (view == self.bottomRightImageView) {
-        NSLog(@"bottomRightImageView");
-        if (!view.folded) {
-            [self foldRightToLeft];
-        } else if (foldedLeftToRight) {
-            [self unfoldLeftToRight];
-        } else if (foldedTopToBottom) {
-            [self unfoldTopToBottom];
-        }
-    } else {
-        NSLog(@"can't happen");
-        abort();
-    }
-}
-
-- (void)swipe:(UISwipeGestureRecognizer*)gestureRecognizer
-{
-    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
-    
-    UIView *view = gestureRecognizer.view;
-    
-    [self resetZPosition];
-
-    if (foldedLeftToRight && (view == self.topRightImageView || self == self.bottomRightImageView)) {
-        [self.topLeftImageView unfold];
-        [self.bottomLeftImageView unfold];
-    } else if (foldedRightToLeft) {
-        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-            [self unfoldLeftToRight];
-        }
-    } else if (foldedTopToBottom) {
-        // do nothing
-    } else if (foldedBottomToTop) {
-        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-            [self unfoldTopToBottom];
-        }
-    } else {
-        if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-            [self foldLeftToRight];
-        } else if (gestureRecognizer.direction == UISwipeGestureRecognizerDirectionDown) {
-            [self foldTopToBottom];
-        }
-    }
 }
 
 - (void)topLeft:(UITapGestureRecognizer*)gestureRecognizer
@@ -566,36 +461,20 @@ static const void *kAnchorPoint = &kAnchorPoint;
         self.bottomLeftImageView.userInteractionEnabled = YES;
         self.bottomRightImageView.userInteractionEnabled = YES;
         
-//        [self setupGestureRecognizers:self.topLeftImageView
-//                            tapAction:@selector(topLeft:)
-//                          swipeAction:@selector(topLeftSwipe:)];
-//        
-//        [self setupGestureRecognizers:self.topRightImageView
-//                            tapAction:@selector(topRight:)
-//                          swipeAction:@selector(topRightSwipe:)];
-//        
-//        [self setupGestureRecognizers:self.bottomLeftImageView
-//                            tapAction:@selector(bottomLeft:)
-//                          swipeAction:@selector(bottomLeftSwipe:)];
-//        
-//        [self setupGestureRecognizers:self.bottomRightImageView
-//                            tapAction:@selector(bottomRight:)
-//                          swipeAction:@selector(bottomRightSwipe:)];
-////////
         [self setupGestureRecognizers:self.topLeftImageView
-                            tapAction:@selector(tap:)
+                            tapAction:@selector(topLeft:)
                           swipeAction:@selector(topLeftSwipe:)];
         
         [self setupGestureRecognizers:self.topRightImageView
-                            tapAction:@selector(tap:)
+                            tapAction:@selector(topRight:)
                           swipeAction:@selector(topRightSwipe:)];
         
         [self setupGestureRecognizers:self.bottomLeftImageView
-                            tapAction:@selector(tap:)
+                            tapAction:@selector(bottomLeft:)
                           swipeAction:@selector(bottomLeftSwipe:)];
         
         [self setupGestureRecognizers:self.bottomRightImageView
-                            tapAction:@selector(tap:)
+                            tapAction:@selector(bottomRight:)
                           swipeAction:@selector(bottomRightSwipe:)];
     }
     return self;
