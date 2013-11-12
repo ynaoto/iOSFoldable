@@ -16,37 +16,56 @@
     CGFloat w = bounds.size.width / 2;
     CGFloat h = bounds.size.height / 2;
     
-    //CATransformLayer
+    CATransformLayer *transformLayer;
     CALayer *layer;
     
-    layer = [CALayer layer];
-    layer.frame = CGRectMake(0, 0, w, h);
-    layer.contentsGravity = kCAGravityBottomLeft;
-    layer.masksToBounds = YES;
-    _topLeftLayer = layer;
+    transformLayer = [CATransformLayer layer];
+    transformLayer.frame = CGRectMake(0, 0, 2*w, 2*h);
     
     layer = [CALayer layer];
-    layer.frame = CGRectMake(w, 0, w, h);
+    layer.bounds = CGRectMake(0, 0, w, h);
+//    layer.anchorPoint = CGPointMake(1.0, 1.0);
+//    layer.position = CGPointMake(w, h);
+//    layer.contentsGravity = kCAGravityBottomLeft;
+    layer.contentsGravity = kCAGravityTopLeft;
+    layer.anchorPoint = CGPointMake(1.0, 1.0);
+    layer.position = CGPointMake(w, h);
+    layer.masksToBounds = YES;
+    _topLeftLayer = layer;
+    [transformLayer addSublayer:layer];
+    
+    layer = [CALayer layer];
+    layer.bounds = CGRectMake(0, 0, w, h);
+    layer.anchorPoint = CGPointMake(0.0, 1.0);
+    layer.position = CGPointMake(w, h);
     layer.contentsGravity = kCAGravityBottomRight;
     layer.masksToBounds = YES;
     _topRightLayer = layer;
+    [transformLayer addSublayer:layer];
     
     layer = [CALayer layer];
-    layer.frame = CGRectMake(0, h, w, h);
+    layer.bounds = CGRectMake(0, 0, w, h);
+    layer.anchorPoint = CGPointMake(1.0, 0.0);
+    layer.position = CGPointMake(w, h);
     layer.contentsGravity = kCAGravityTopLeft;
     layer.masksToBounds = YES;
     _bottomLeftLayer = layer;
+    [transformLayer addSublayer:layer];
     
     layer = [CALayer layer];
-    layer.frame = CGRectMake(w, h, w, h);
+    layer.bounds = CGRectMake(0, 0, w, h);
+    layer.anchorPoint = CGPointMake(0.0, 0.0);
+    layer.position = CGPointMake(w, h);
     layer.contentsGravity = kCAGravityTopRight;
     layer.masksToBounds = YES;
     _bottomRightLayer = layer;
+    [transformLayer addSublayer:layer];
 
-    [self.layer addSublayer:self.topLeftLayer];
-    [self.layer addSublayer:self.topRightLayer];
-    [self.layer addSublayer:self.bottomLeftLayer];
-    [self.layer addSublayer:self.bottomRightLayer];
+    [self.layer addSublayer:transformLayer];
+    
+    CATransform3D transform = transformLayer.sublayerTransform;
+    transform.m34 = -1.0/500;
+    transformLayer.sublayerTransform = transform;
 }
 
 - (void)setupQuadImages
@@ -58,12 +77,14 @@
     UIImage *srcImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    self.topLeftLayer.contents = (id)srcImage.CGImage;
-    self.topRightLayer.contents = (id)srcImage.CGImage;
-    self.bottomLeftLayer.contents = (id)srcImage.CGImage;
-    self.bottomRightLayer.contents = (id)srcImage.CGImage;
+    id imageRefContents = (id)srcImage.CGImage;
+    self.topLeftLayer.contents = imageRefContents;
+    self.topRightLayer.contents = imageRefContents;
+    self.bottomLeftLayer.contents = imageRefContents;
+    self.bottomRightLayer.contents = imageRefContents;
 
     self.image = nil;
+    
     [self setNeedsDisplay];
 }
 

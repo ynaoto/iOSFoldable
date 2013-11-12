@@ -11,22 +11,23 @@
 
 @interface CABasicAnimation (XYRotation)
 
-+ (CABasicAnimation*)makeXRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34;
-+ (CABasicAnimation*)makeYRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34;
++ (CABasicAnimation*)makeXRotationAnimation:(CGFloat)r;
++ (CABasicAnimation*)makeYRotationAnimation:(CGFloat)r;
 
 @end
 
 @implementation CABasicAnimation (XYRotation)
 
-+ (CABasicAnimation*)makeXRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
+static const int kLargeNum = 1000000; // M_PI の回転が、どちらむきになるかがわからないのを防ぐ
+static const CFTimeInterval kDuration = 0.8;
+
++ (CABasicAnimation*)makeXRotationAnimation:(CGFloat)r
 {
     CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
     
     CATransform3D transform = CATransform3DIdentity;
-    transform.m34 = m34; // make it 3D flavor
-    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, from, 1.0, 0.0, 0.0)];
-    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, to, 1.0, 0.0, 0.0)];
-    anim.duration = 0.8;
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, (kLargeNum-1)*r/kLargeNum, 1.0, 0.0, 0.0)];
+    anim.duration = kDuration;
     anim.repeatCount = 1;
     anim.fillMode = kCAFillModeForwards;
     anim.removedOnCompletion = NO;
@@ -34,15 +35,13 @@
     return anim;
 }
 
-+ (CABasicAnimation*)makeYRotationFrom:(CGFloat)from to:(CGFloat)to m34:(CGFloat)m34
++ (CABasicAnimation*)makeYRotationAnimation:(CGFloat)r
 {
     CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
     
     CATransform3D transform = CATransform3DIdentity;
-    transform.m34 = m34; // make it 3D flavor
-    anim.fromValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, from, 0.0, 1.0, 0.0)];
-    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, to, 0.0, 1.0, 0.0)];
-    anim.duration = 0.8;
+    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, (kLargeNum-1)*r/kLargeNum, 0.0, 1.0, 0.0)];
+    anim.duration = kDuration;
     anim.repeatCount = 1;
     anim.fillMode = kCAFillModeForwards;
     anim.removedOnCompletion = NO;
@@ -56,7 +55,7 @@
 @property (nonatomic) BOOL folded;
 @property (nonatomic) CABasicAnimation *unfoldAnim;
 
-- (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint;
+- (void)fold:(CABasicAnimation*)anim;
 - (void)unfold;
 
 @end
@@ -86,30 +85,18 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
     objc_setAssociatedObject(self, kUnfoldAnim, unfoldAnim, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (void)applyAnimation:(CABasicAnimation*)anim
-{
-    self.zPosition = 1000; // 実験して決めた
-    [self addAnimation:anim forKey:nil];
-}
-
-- (void)fold:(CABasicAnimation*)anim anchorPoint:(CGPoint)anchorPoint
+- (void)fold:(CABasicAnimation*)anim
 {
     if (self.folded) {
         NSLog(@"warning: the view has been folded");
         return;
     }
 
-    CGRect frame = self.frame;
-    self.position = CGPointMake(frame.origin.x + anchorPoint.x * frame.size.width,
-                                frame.origin.y + anchorPoint.y * frame.size.height);
-    self.anchorPoint = anchorPoint;
-    [self applyAnimation:anim];
+    [self addAnimation:anim forKey:nil];
     
     self.folded = YES;
     self.unfoldAnim = [anim copy];
-    NSNumber *tmp = anim.fromValue;
-    self.unfoldAnim.fromValue = anim.toValue;
-    self.unfoldAnim.toValue = tmp;
+    self.unfoldAnim.toValue = nil; // just remove the animation
 }
 
 - (void)unfold
@@ -119,7 +106,7 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
         return;
     }
 
-    [self applyAnimation:self.unfoldAnim];
+    [self addAnimation:self.unfoldAnim forKey:nil];
     
     self.folded = NO;
 }
@@ -138,22 +125,13 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
     BOOL foldedBottomToTop;
 }
 
-- (void)resetZPosition
-{
-    self.topLeftLayer.zPosition = 0;
-    self.topRightLayer.zPosition = 0;
-    self.bottomLeftLayer.zPosition = 0;
-    self.bottomRightLayer.zPosition = 0;
-}
-
 - (void)foldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *foldDownAnim = [CABasicAnimation makeXRotationFrom:0 to:M_PI m34:-1.0/500];
-    [self resetZPosition];
-    [self.topLeftLayer fold:foldDownAnim anchorPoint:CGPointMake(1.0, 1.0)];
-    [self.topRightLayer fold:foldDownAnim anchorPoint:CGPointMake(0.0, 1.0)];
+    CABasicAnimation *foldDownAnim = [CABasicAnimation makeXRotationAnimation:-M_PI];
+    [self.topLeftLayer fold:foldDownAnim];
+    [self.topRightLayer fold:foldDownAnim];
     
     foldedTopToBottom = YES;
 }
@@ -162,7 +140,6 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    [self resetZPosition];
     [self.topRightLayer unfold];
     [self.topLeftLayer unfold];
     
@@ -173,10 +150,9 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *foldUpAnim = [CABasicAnimation makeXRotationFrom:0 to:-M_PI m34:1.0/500];
-    [self resetZPosition];
-    [self.bottomLeftLayer fold:foldUpAnim anchorPoint:CGPointMake(1.0, 0.0)];
-    [self.bottomRightLayer fold:foldUpAnim anchorPoint:CGPointMake(0.0, 0.0)];
+    CABasicAnimation *foldUpAnim = [CABasicAnimation makeXRotationAnimation:M_PI];
+    [self.bottomLeftLayer fold:foldUpAnim];
+    [self.bottomRightLayer fold:foldUpAnim];
     
     foldedBottomToTop = YES;
 }
@@ -185,7 +161,6 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    [self resetZPosition];
     [self.bottomRightLayer unfold];
     [self.bottomLeftLayer unfold];
     
@@ -196,10 +171,9 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *foldRightAnim = [CABasicAnimation makeYRotationFrom:0 to:M_PI m34:1.0/500];
-    [self resetZPosition];
-    [self.topLeftLayer fold:foldRightAnim anchorPoint:CGPointMake(1.0, 1.0)];
-    [self.bottomLeftLayer fold:foldRightAnim anchorPoint:CGPointMake(1.0, 0.0)];
+    CABasicAnimation *foldRightAnim = [CABasicAnimation makeYRotationAnimation:M_PI];
+    [self.topLeftLayer fold:foldRightAnim];
+    [self.bottomLeftLayer fold:foldRightAnim];
     
     foldedLeftToRight = YES;
 }
@@ -208,7 +182,6 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    [self resetZPosition];
     [self.topLeftLayer unfold];
     [self.bottomLeftLayer unfold];
     
@@ -219,10 +192,9 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    CABasicAnimation *foldLeftAnim = [CABasicAnimation makeYRotationFrom:0 to:-M_PI m34:-1.0/500];
-    [self resetZPosition];
-    [self.topRightLayer fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 1.0)];
-    [self.bottomRightLayer fold:foldLeftAnim anchorPoint:CGPointMake(0.0, 0.0)];
+    CABasicAnimation *foldLeftAnim = [CABasicAnimation makeYRotationAnimation:-M_PI];
+    [self.topRightLayer fold:foldLeftAnim];
+    [self.bottomRightLayer fold:foldLeftAnim];
     
     foldedRightToLeft = YES;
 }
@@ -231,7 +203,6 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 {
     NSLog(@"%s", __FUNCTION__);
     
-    [self resetZPosition];
     [self.topRightLayer unfold];
     [self.bottomRightLayer unfold];
     
