@@ -16,56 +16,44 @@
     CGFloat w = bounds.size.width / 2;
     CGFloat h = bounds.size.height / 2;
     
-    CATransformLayer *transformLayer;
-    CALayer *layer;
-    
-    transformLayer = [CATransformLayer layer];
-    transformLayer.frame = CGRectMake(0, 0, 2*w, 2*h);
-    
-    layer = [CALayer layer];
-    layer.bounds = CGRectMake(0, 0, w, h);
-//    layer.anchorPoint = CGPointMake(1.0, 1.0);
-//    layer.position = CGPointMake(w, h);
-//    layer.contentsGravity = kCAGravityBottomLeft;
-    layer.contentsGravity = kCAGravityTopLeft;
-    layer.anchorPoint = CGPointMake(1.0, 1.0);
-    layer.position = CGPointMake(w, h);
-    layer.masksToBounds = YES;
-    _topLeftLayer = layer;
-    [transformLayer addSublayer:layer];
-    
-    layer = [CALayer layer];
-    layer.bounds = CGRectMake(0, 0, w, h);
-    layer.anchorPoint = CGPointMake(0.0, 1.0);
-    layer.position = CGPointMake(w, h);
-    layer.contentsGravity = kCAGravityBottomRight;
-    layer.masksToBounds = YES;
-    _topRightLayer = layer;
-    [transformLayer addSublayer:layer];
-    
-    layer = [CALayer layer];
-    layer.bounds = CGRectMake(0, 0, w, h);
-    layer.anchorPoint = CGPointMake(1.0, 0.0);
-    layer.position = CGPointMake(w, h);
-    layer.contentsGravity = kCAGravityTopLeft;
-    layer.masksToBounds = YES;
-    _bottomLeftLayer = layer;
-    [transformLayer addSublayer:layer];
-    
-    layer = [CALayer layer];
-    layer.bounds = CGRectMake(0, 0, w, h);
-    layer.anchorPoint = CGPointMake(0.0, 0.0);
-    layer.position = CGPointMake(w, h);
-    layer.contentsGravity = kCAGravityTopRight;
-    layer.masksToBounds = YES;
-    _bottomRightLayer = layer;
-    [transformLayer addSublayer:layer];
-
-    [self.layer addSublayer:transformLayer];
-    
+    CATransformLayer *transformLayer = [CATransformLayer layer];
     CATransform3D transform = transformLayer.sublayerTransform;
     transform.m34 = -1.0/500;
     transformLayer.sublayerTransform = transform;
+    transformLayer.frame = self.layer.bounds;
+    [self.layer addSublayer:transformLayer];
+    
+    _topLeftLayer = [CALayer layer];
+    _topLeftLayer.contentsGravity = kCAGravityTopLeft;
+    _topLeftLayer.contentsRect = CGRectMake(0.0, 0.0, 0.5, 0.5);
+    _topLeftLayer.anchorPoint = CGPointMake(1.0, 1.0);
+    _topLeftLayer.frame = CGRectMake(0, 0, w, h);
+    _topLeftLayer.masksToBounds = YES;
+    [transformLayer addSublayer:_topLeftLayer];
+
+    _topRightLayer = [CALayer layer];
+    _topRightLayer.contentsGravity = kCAGravityTopRight;
+    _topRightLayer.contentsRect = CGRectMake(0.5, 0, 0.5, 0.5);
+    _topRightLayer.anchorPoint = CGPointMake(0.0, 1.0);
+    _topRightLayer.frame = CGRectMake(w, 0, w, h);
+    _topRightLayer.masksToBounds = YES;
+    [transformLayer addSublayer:_topRightLayer];
+
+    _bottomLeftLayer = [CALayer layer];
+    _bottomLeftLayer.contentsGravity = kCAGravityBottomLeft;
+    _bottomLeftLayer.contentsRect = CGRectMake(0.0, 0.5, 0.5, 0.5);
+    _bottomLeftLayer.anchorPoint = CGPointMake(1.0, 0.0);
+    _bottomLeftLayer.frame = CGRectMake(0, h, w, h);
+    _bottomLeftLayer.masksToBounds = YES;
+    [transformLayer addSublayer:_bottomLeftLayer];
+
+    _bottomRightLayer = [CALayer layer];
+    _bottomRightLayer.contentsGravity = kCAGravityBottomRight;
+    _bottomRightLayer.contentsRect = CGRectMake(0.5, 0.5, 0.5, 0.5);
+    _bottomRightLayer.anchorPoint = CGPointMake(0.0, 0.0);
+    _bottomRightLayer.frame = CGRectMake(w, h, w, h);
+    _bottomRightLayer.masksToBounds = YES;
+    [transformLayer addSublayer:_bottomRightLayer];
 }
 
 - (void)setupQuadImages

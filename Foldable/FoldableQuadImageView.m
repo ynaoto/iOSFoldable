@@ -18,7 +18,7 @@
 
 @implementation CABasicAnimation (XYRotation)
 
-static const int kLargeNum = 1000000; // M_PI の回転が、どちらむきになるかがわからないのを防ぐ
+static const int kLargeNum = 10000; // M_PI の回転が、どちらむきになるかがわからないのを防ぐ
 static const CFTimeInterval kDuration = 0.8;
 
 + (CABasicAnimation*)makeXRotationAnimation:(CGFloat)r
