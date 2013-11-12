@@ -9,9 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface QuadImageView : UIImageView
-@property (readonly, nonatomic) CALayer *topLeftLayer;
-@property (readonly, nonatomic) CALayer *topRightLayer;
-@property (readonly, nonatomic) CALayer *bottomLeftLayer;
-@property (readonly, nonatomic) CALayer *bottomRightLayer;
+@property (strong, nonatomic, readonly) CALayer *topLeftLayer;
+@property (strong, nonatomic, readonly) CALayer *topRightLayer;
+@property (strong, nonatomic, readonly) CALayer *bottomLeftLayer;
+@property (strong, nonatomic, readonly) CALayer *bottomRightLayer;
 
 @end

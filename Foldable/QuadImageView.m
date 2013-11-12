@@ -9,48 +9,44 @@
 #import "QuadImageView.h"
 
 @implementation QuadImageView
-{
-    UIImageView *_topLeftImageView;
-    UIImageView *_topRightImageView;
-    UIImageView *_bottomLeftImageView;
-    UIImageView *_bottomRightImageView;
-}
 
-- (CALayer *)topLeftLayer
-{
-    return _topLeftImageView.layer;
-}
-
-- (CALayer *)topRightLayer
-{
-    return _topRightImageView.layer;
-}
-
-- (CALayer *)bottomLeftLayer
-{
-    return _bottomLeftImageView.layer;
-}
-
-- (CALayer *)bottomRightLayer
-{
-    return _bottomRightImageView.layer;
-}
-
-- (void)setupQuadImageViews
+- (void)setupQuadLayers
 {
     CGRect bounds = self.bounds;
     CGFloat w = bounds.size.width / 2;
     CGFloat h = bounds.size.height / 2;
+    
+    //CATransformLayer
+    CALayer *layer;
+    
+    layer = [CALayer layer];
+    layer.frame = CGRectMake(0, 0, w, h);
+    layer.contentsGravity = kCAGravityBottomLeft;
+    layer.masksToBounds = YES;
+    _topLeftLayer = layer;
+    
+    layer = [CALayer layer];
+    layer.frame = CGRectMake(w, 0, w, h);
+    layer.contentsGravity = kCAGravityBottomRight;
+    layer.masksToBounds = YES;
+    _topRightLayer = layer;
+    
+    layer = [CALayer layer];
+    layer.frame = CGRectMake(0, h, w, h);
+    layer.contentsGravity = kCAGravityTopLeft;
+    layer.masksToBounds = YES;
+    _bottomLeftLayer = layer;
+    
+    layer = [CALayer layer];
+    layer.frame = CGRectMake(w, h, w, h);
+    layer.contentsGravity = kCAGravityTopRight;
+    layer.masksToBounds = YES;
+    _bottomRightLayer = layer;
 
-    _topLeftImageView     = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
-    _topRightImageView    = [[UIImageView alloc] initWithFrame:CGRectMake(w, 0, w, h)];
-    _bottomLeftImageView  = [[UIImageView alloc] initWithFrame:CGRectMake(0, h, w, h)];
-    _bottomRightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(w, h, w, h)];
-
-    [self addSubview:_topLeftImageView];
-    [self addSubview:_topRightImageView];
-    [self addSubview:_bottomLeftImageView];
-    [self addSubview:_bottomRightImageView];
+    [self.layer addSublayer:self.topLeftLayer];
+    [self.layer addSublayer:self.topRightLayer];
+    [self.layer addSublayer:self.bottomLeftLayer];
+    [self.layer addSublayer:self.bottomRightLayer];
 }
 
 - (void)setupQuadImages
@@ -62,29 +58,13 @@
     UIImage *srcImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImageView *view;
-    
-    view = _topLeftImageView;
-    view.contentMode = UIViewContentModeTopLeft;
-    view.clipsToBounds = YES;
-    view.image = srcImage;
-    
-    view = _topRightImageView;
-    view.contentMode = UIViewContentModeTopRight;
-    view.clipsToBounds = YES;
-    view.image = srcImage;
-    
-    view = _bottomLeftImageView;
-    view.contentMode = UIViewContentModeBottomLeft;
-    view.clipsToBounds = YES;
-    view.image = srcImage;
-    
-    view = _bottomRightImageView;
-    view.contentMode = UIViewContentModeBottomRight;
-    view.clipsToBounds = YES;
-    view.image = srcImage;
+    self.topLeftLayer.contents = (id)srcImage.CGImage;
+    self.topRightLayer.contents = (id)srcImage.CGImage;
+    self.bottomLeftLayer.contents = (id)srcImage.CGImage;
+    self.bottomRightLayer.contents = (id)srcImage.CGImage;
 
     self.image = nil;
+    [self setNeedsDisplay];
 }
 
 - (void)setImage:(UIImage *)image
@@ -101,7 +81,7 @@
     NSLog(@"%s", __FUNCTION__);
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self setupQuadImageViews];
+        [self setupQuadLayers];
         [self setImage:self.image]; // initWithCoder では setImage: の呼び出しが行われないので、強制的に呼び出す。
     }
     return self;
