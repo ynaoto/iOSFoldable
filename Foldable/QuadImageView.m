@@ -22,37 +22,38 @@
     transformLayer.sublayerTransform = transform;
     transformLayer.frame = self.layer.bounds;
     [self.layer addSublayer:transformLayer];
-    
+
+    // 以下における contentsRect を用いた行は、その下の２行で置き換えても良い。
     _topLeftLayer = [CALayer layer];
-    _topLeftLayer.contentsGravity = kCAGravityTopLeft;
     _topLeftLayer.contentsRect = CGRectMake(0.0, 0.0, 0.5, 0.5);
+//    _topLeftLayer.contentsGravity = kCAGravityBottomLeft;
+//    _topLeftLayer.masksToBounds = YES;
     _topLeftLayer.anchorPoint = CGPointMake(1.0, 1.0);
     _topLeftLayer.frame = CGRectMake(0, 0, w, h);
-    _topLeftLayer.masksToBounds = YES;
     [transformLayer addSublayer:_topLeftLayer];
 
     _topRightLayer = [CALayer layer];
-    _topRightLayer.contentsGravity = kCAGravityTopRight;
     _topRightLayer.contentsRect = CGRectMake(0.5, 0, 0.5, 0.5);
+//    _topRightLayer.contentsGravity = kCAGravityBottomRight;
+//    _topRightLayer.masksToBounds = YES;
     _topRightLayer.anchorPoint = CGPointMake(0.0, 1.0);
     _topRightLayer.frame = CGRectMake(w, 0, w, h);
-    _topRightLayer.masksToBounds = YES;
     [transformLayer addSublayer:_topRightLayer];
 
     _bottomLeftLayer = [CALayer layer];
-    _bottomLeftLayer.contentsGravity = kCAGravityBottomLeft;
     _bottomLeftLayer.contentsRect = CGRectMake(0.0, 0.5, 0.5, 0.5);
+//    _bottomLeftLayer.contentsGravity = kCAGravityTopLeft;
+//    _bottomLeftLayer.masksToBounds = YES;
     _bottomLeftLayer.anchorPoint = CGPointMake(1.0, 0.0);
     _bottomLeftLayer.frame = CGRectMake(0, h, w, h);
-    _bottomLeftLayer.masksToBounds = YES;
     [transformLayer addSublayer:_bottomLeftLayer];
 
     _bottomRightLayer = [CALayer layer];
-    _bottomRightLayer.contentsGravity = kCAGravityBottomRight;
     _bottomRightLayer.contentsRect = CGRectMake(0.5, 0.5, 0.5, 0.5);
+//    _bottomRightLayer.contentsGravity = kCAGravityTopRight;
+//    _bottomRightLayer.masksToBounds = YES;
     _bottomRightLayer.anchorPoint = CGPointMake(0.0, 0.0);
     _bottomRightLayer.frame = CGRectMake(w, h, w, h);
-    _bottomRightLayer.masksToBounds = YES;
     [transformLayer addSublayer:_bottomRightLayer];
 }
 
