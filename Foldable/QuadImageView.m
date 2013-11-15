@@ -10,14 +10,40 @@
 
 @implementation QuadImageView
 
-static CALayer *makeQuater(CGFloat w, CGFloat h, CGFloat ax, CGFloat ay, NSString *gravity)
+- (void)setupGravity
+{
+    _topLeftLayer.geometryFlipped     = self.useGeometryFlipping;
+    _topRightLayer.geometryFlipped    = self.useGeometryFlipping;
+    _bottomLeftLayer.geometryFlipped  = self.useGeometryFlipping;
+    _bottomRightLayer.geometryFlipped = self.useGeometryFlipping;
+
+    if (self.useGeometryFlipping) {
+        _topLeftLayer.contentsGravity     = kCAGravityTopLeft;
+        _topRightLayer.contentsGravity    = kCAGravityTopRight;
+        _bottomLeftLayer.contentsGravity  = kCAGravityBottomLeft;
+        _bottomRightLayer.contentsGravity = kCAGravityBottomRight;
+    } else {
+        _topLeftLayer.contentsGravity     = kCAGravityBottomLeft;
+        _topRightLayer.contentsGravity    = kCAGravityBottomRight;
+        _bottomLeftLayer.contentsGravity  = kCAGravityTopLeft;
+        _bottomRightLayer.contentsGravity = kCAGravityTopRight;
+    }
+}
+
+- (void)setUseGeometryFlipping:(BOOL)useGeometryFlipping
+{
+    _useGeometryFlipping = useGeometryFlipping;
+    [self setupGravity];
+}
+
+- (CALayer*)makeQuaterWithSize:(CGSize)size anchorPoint:(CGPoint)anchorPoint
 {
     CALayer *layer = [CALayer layer];
-//    layer.geometryFlipped = YES; // gravity 定数名との整合性を取るため
-    layer.contentsGravity = gravity;
     layer.masksToBounds = YES;
-    layer.anchorPoint = CGPointMake(ax, ay);
-    layer.frame = CGRectMake((1.0 - ax) * w, (1.0 - ay) * h, w, h);
+    layer.anchorPoint = anchorPoint;
+    layer.frame = CGRectMake((1.0 - anchorPoint.x) * size.width,
+                             (1.0 - anchorPoint.y) * size.height,
+                             size.width, size.height);
     return layer;
 }
 
@@ -32,18 +58,15 @@ static CALayer *makeQuater(CGFloat w, CGFloat h, CGFloat ax, CGFloat ay, NSStrin
     transform.m34 = -1.0/500;
     transformLayer.sublayerTransform = transform;
     transformLayer.frame = self.layer.bounds;
-//    transformLayer.geometryFlipped = YES; ///////
     [self.layer addSublayer:transformLayer];
 
-//    _topLeftLayer     = makeQuater(w, h, 1.0, 1.0, kCAGravityTopLeft);
-//    _topRightLayer    = makeQuater(w, h, 0.0, 1.0, kCAGravityTopRight);
-//    _bottomLeftLayer  = makeQuater(w, h, 1.0, 0.0, kCAGravityBottomLeft);
-//    _bottomRightLayer = makeQuater(w, h, 0.0, 0.0, kCAGravityBottomRight);
-    _topLeftLayer     = makeQuater(w, h, 1.0, 1.0, kCAGravityBottomLeft);
-    _topRightLayer    = makeQuater(w, h, 0.0, 1.0, kCAGravityBottomRight);
-    _bottomLeftLayer  = makeQuater(w, h, 1.0, 0.0, kCAGravityTopLeft);
-    _bottomRightLayer = makeQuater(w, h, 0.0, 0.0, kCAGravityTopRight);
-
+    CGSize size = CGSizeMake(w, h);
+    _topLeftLayer     = [self makeQuaterWithSize:size anchorPoint:CGPointMake(1.0, 1.0)];
+    _topRightLayer    = [self makeQuaterWithSize:size anchorPoint:CGPointMake(0.0, 1.0)];
+    _bottomLeftLayer  = [self makeQuaterWithSize:size anchorPoint:CGPointMake(1.0, 0.0)];
+    _bottomRightLayer = [self makeQuaterWithSize:size anchorPoint:CGPointMake(0.0, 0.0)];
+    [self setupGravity];
+    
     [transformLayer addSublayer:_topLeftLayer];
     [transformLayer addSublayer:_topRightLayer];
     [transformLayer addSublayer:_bottomLeftLayer];
@@ -66,8 +89,6 @@ static CALayer *makeQuater(CGFloat w, CGFloat h, CGFloat ax, CGFloat ay, NSStrin
     self.bottomRightLayer.contents = imageRefContents;
 
     self.image = nil;
-    
-    //[self setNeedsDisplay];
 }
 
 - (void)setImage:(UIImage *)image

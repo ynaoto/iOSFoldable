@@ -13,24 +13,24 @@
                         <viewControllerLayoutGuide type="bottom" id="fZC-Gy-N8B"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zzs_mochi01.png" translatesAutoresizingMaskIntoConstraints="NO" id="j46-dm-rgq" customClass="FoldableQuadImageView">
-                                <rect key="frame" x="20" y="144" width="280" height="280"/>
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="zzs_mochi01.png" translatesAutoresizingMaskIntoConstraints="NO" id="j46-dm-rgq" customClass="FoldableQuadImageView">
+                                <rect key="frame" x="60" y="32" width="200" height="200"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="280" id="e90-VK-iuA"/>
-                                    <constraint firstAttribute="width" constant="280" id="fic-K4-meC"/>
-                                </constraints>
+                            </imageView>
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="zzs_mochi01.png" translatesAutoresizingMaskIntoConstraints="NO" id="hb3-ej-iLX" customClass="FoldableQuadImageView">
+                                <rect key="frame" x="60" y="249" width="200" height="200"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="centerY" secondItem="j46-dm-rgq" secondAttribute="centerY" id="yze-oA-HRm"/>
-                            <constraint firstAttribute="centerX" secondItem="j46-dm-rgq" secondAttribute="centerX" id="zVn-b0-lEe"/>
-                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="view1" destination="j46-dm-rgq" id="xCA-fg-0HY"/>
+                        <outlet property="view2" destination="hb3-ej-iLX" id="0tP-mV-bPU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
@@ -42,6 +42,6 @@
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
+        <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
 </document>

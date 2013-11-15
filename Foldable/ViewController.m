@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "FoldableQuadImageView.h"
 
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet FoldableQuadImageView *view1;
+@property (weak, nonatomic) IBOutlet FoldableQuadImageView *view2;
 
 @end
 
@@ -18,6 +21,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    self.view1.useGeometryFlipping = YES;
+    self.view2.useGeometryFlipping = NO;
 }
 
 - (void)didReceiveMemoryWarning

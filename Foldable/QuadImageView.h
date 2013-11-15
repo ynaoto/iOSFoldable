@@ -14,4 +14,6 @@
 @property (strong, nonatomic, readonly) CALayer *bottomLeftLayer;
 @property (strong, nonatomic, readonly) CALayer *bottomRightLayer;
 
+@property (nonatomic) BOOL useGeometryFlipping;
+
 @end
