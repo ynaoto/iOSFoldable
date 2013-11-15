@@ -1,0 +1,493 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9331297F18293BE700F44449 /* FoldableQuadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9331297E18293BE700F44449 /* FoldableQuadImageView.m */; };
+		93345EF318260FB700B1E2B8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF218260FB700B1E2B8 /* Foundation.framework */; };
+		93345EF518260FB700B1E2B8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF418260FB700B1E2B8 /* CoreGraphics.framework */; };
+		93345EF718260FB700B1E2B8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF618260FB700B1E2B8 /* UIKit.framework */; };
+		93345EFD18260FB700B1E2B8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93345EFB18260FB700B1E2B8 /* InfoPlist.strings */; };
+		93345EFF18260FB700B1E2B8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345EFE18260FB700B1E2B8 /* main.m */; };
+		93345F0318260FB700B1E2B8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F0218260FB700B1E2B8 /* AppDelegate.m */; };
+		93345F0618260FB700B1E2B8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93345F0418260FB700B1E2B8 /* Main.storyboard */; };
+		93345F0918260FB700B1E2B8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F0818260FB700B1E2B8 /* ViewController.m */; };
+		93345F0B18260FB700B1E2B8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93345F0A18260FB700B1E2B8 /* Images.xcassets */; };
+		93345F1218260FB700B1E2B8 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345F1118260FB700B1E2B8 /* XCTest.framework */; };
+		93345F1318260FB700B1E2B8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF218260FB700B1E2B8 /* Foundation.framework */; };
+		93345F1418260FB700B1E2B8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93345EF618260FB700B1E2B8 /* UIKit.framework */; };
+		93345F1C18260FB700B1E2B8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93345F1A18260FB700B1E2B8 /* InfoPlist.strings */; };
+		93345F1E18260FB700B1E2B8 /* FoldableTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F1D18260FB700B1E2B8 /* FoldableTests.m */; };
+		93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F2818260FD200B1E2B8 /* QuadImageView.m */; };
+		93345F2B1826105900B1E2B8 /* zzs_mochi01.png in Resources */ = {isa = PBXBuildFile; fileRef = 93345F2A1826105900B1E2B8 /* zzs_mochi01.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		93345F1518260FB700B1E2B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93345EE718260FB700B1E2B8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93345EEE18260FB700B1E2B8;
+			remoteInfo = Foldable;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		9331297D18293BE700F44449 /* FoldableQuadImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoldableQuadImageView.h; sourceTree = "<group>"; };
+		9331297E18293BE700F44449 /* FoldableQuadImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoldableQuadImageView.m; sourceTree = "<group>"; };
+		93345EEF18260FB700B1E2B8 /* Foldable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Foldable.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93345EF218260FB700B1E2B8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		93345EF418260FB700B1E2B8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		93345EF618260FB700B1E2B8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		93345EFA18260FB700B1E2B8 /* Foldable-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Foldable-Info.plist"; sourceTree = "<group>"; };
+		93345EFC18260FB700B1E2B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		93345EFE18260FB700B1E2B8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		93345F0018260FB700B1E2B8 /* Foldable-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Foldable-Prefix.pch"; sourceTree = "<group>"; };
+		93345F0118260FB700B1E2B8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		93345F0218260FB700B1E2B8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		93345F0518260FB700B1E2B8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		93345F0718260FB700B1E2B8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		93345F0818260FB700B1E2B8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		93345F0A18260FB700B1E2B8 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		93345F1018260FB700B1E2B8 /* FoldableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoldableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		93345F1118260FB700B1E2B8 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		93345F1918260FB700B1E2B8 /* FoldableTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FoldableTests-Info.plist"; sourceTree = "<group>"; };
+		93345F1B18260FB700B1E2B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		93345F1D18260FB700B1E2B8 /* FoldableTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FoldableTests.m; sourceTree = "<group>"; };
+		93345F2718260FD200B1E2B8 /* QuadImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadImageView.h; sourceTree = "<group>"; };
+		93345F2818260FD200B1E2B8 /* QuadImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuadImageView.m; sourceTree = "<group>"; };
+		93345F2A1826105900B1E2B8 /* zzs_mochi01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zzs_mochi01.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		93345EEC18260FB700B1E2B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345EF518260FB700B1E2B8 /* CoreGraphics.framework in Frameworks */,
+				93345EF718260FB700B1E2B8 /* UIKit.framework in Frameworks */,
+				93345EF318260FB700B1E2B8 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93345F0D18260FB700B1E2B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345F1218260FB700B1E2B8 /* XCTest.framework in Frameworks */,
+				93345F1418260FB700B1E2B8 /* UIKit.framework in Frameworks */,
+				93345F1318260FB700B1E2B8 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		93345EE618260FB700B1E2B8 = {
+			isa = PBXGroup;
+			children = (
+				93345EF818260FB700B1E2B8 /* Foldable */,
+				93345F1718260FB700B1E2B8 /* FoldableTests */,
+				93345EF118260FB700B1E2B8 /* Frameworks */,
+				93345EF018260FB700B1E2B8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		93345EF018260FB700B1E2B8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				93345EEF18260FB700B1E2B8 /* Foldable.app */,
+				93345F1018260FB700B1E2B8 /* FoldableTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		93345EF118260FB700B1E2B8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				93345EF218260FB700B1E2B8 /* Foundation.framework */,
+				93345EF418260FB700B1E2B8 /* CoreGraphics.framework */,
+				93345EF618260FB700B1E2B8 /* UIKit.framework */,
+				93345F1118260FB700B1E2B8 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		93345EF818260FB700B1E2B8 /* Foldable */ = {
+			isa = PBXGroup;
+			children = (
+				93345F2718260FD200B1E2B8 /* QuadImageView.h */,
+				93345F2818260FD200B1E2B8 /* QuadImageView.m */,
+				9331297D18293BE700F44449 /* FoldableQuadImageView.h */,
+				9331297E18293BE700F44449 /* FoldableQuadImageView.m */,
+				93345F0118260FB700B1E2B8 /* AppDelegate.h */,
+				93345F0218260FB700B1E2B8 /* AppDelegate.m */,
+				93345F0418260FB700B1E2B8 /* Main.storyboard */,
+				93345F0718260FB700B1E2B8 /* ViewController.h */,
+				93345F0818260FB700B1E2B8 /* ViewController.m */,
+				93345F0A18260FB700B1E2B8 /* Images.xcassets */,
+				93345EF918260FB700B1E2B8 /* Supporting Files */,
+			);
+			path = Foldable;
+			sourceTree = "<group>";
+		};
+		93345EF918260FB700B1E2B8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				93345F2A1826105900B1E2B8 /* zzs_mochi01.png */,
+				93345EFA18260FB700B1E2B8 /* Foldable-Info.plist */,
+				93345EFB18260FB700B1E2B8 /* InfoPlist.strings */,
+				93345EFE18260FB700B1E2B8 /* main.m */,
+				93345F0018260FB700B1E2B8 /* Foldable-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		93345F1718260FB700B1E2B8 /* FoldableTests */ = {
+			isa = PBXGroup;
+			children = (
+				93345F1D18260FB700B1E2B8 /* FoldableTests.m */,
+				93345F1818260FB700B1E2B8 /* Supporting Files */,
+			);
+			path = FoldableTests;
+			sourceTree = "<group>";
+		};
+		93345F1818260FB700B1E2B8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				93345F1918260FB700B1E2B8 /* FoldableTests-Info.plist */,
+				93345F1A18260FB700B1E2B8 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		93345EEE18260FB700B1E2B8 /* Foldable */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93345F2118260FB700B1E2B8 /* Build configuration list for PBXNativeTarget "Foldable" */;
+			buildPhases = (
+				93345EEB18260FB700B1E2B8 /* Sources */,
+				93345EEC18260FB700B1E2B8 /* Frameworks */,
+				93345EED18260FB700B1E2B8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Foldable;
+			productName = Foldable;
+			productReference = 93345EEF18260FB700B1E2B8 /* Foldable.app */;
+			productType = "com.apple.product-type.application";
+		};
+		93345F0F18260FB700B1E2B8 /* FoldableTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93345F2418260FB700B1E2B8 /* Build configuration list for PBXNativeTarget "FoldableTests" */;
+			buildPhases = (
+				93345F0C18260FB700B1E2B8 /* Sources */,
+				93345F0D18260FB700B1E2B8 /* Frameworks */,
+				93345F0E18260FB700B1E2B8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93345F1618260FB700B1E2B8 /* PBXTargetDependency */,
+			);
+			name = FoldableTests;
+			productName = FoldableTests;
+			productReference = 93345F1018260FB700B1E2B8 /* FoldableTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		93345EE718260FB700B1E2B8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Naoto Yoshioka";
+				TargetAttributes = {
+					93345F0F18260FB700B1E2B8 = {
+						TestTargetID = 93345EEE18260FB700B1E2B8;
+					};
+				};
+			};
+			buildConfigurationList = 93345EEA18260FB700B1E2B8 /* Build configuration list for PBXProject "Foldable" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 93345EE618260FB700B1E2B8;
+			productRefGroup = 93345EF018260FB700B1E2B8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				93345EEE18260FB700B1E2B8 /* Foldable */,
+				93345F0F18260FB700B1E2B8 /* FoldableTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		93345EED18260FB700B1E2B8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345F0B18260FB700B1E2B8 /* Images.xcassets in Resources */,
+				93345F2B1826105900B1E2B8 /* zzs_mochi01.png in Resources */,
+				93345EFD18260FB700B1E2B8 /* InfoPlist.strings in Resources */,
+				93345F0618260FB700B1E2B8 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93345F0E18260FB700B1E2B8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345F1C18260FB700B1E2B8 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		93345EEB18260FB700B1E2B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345F0918260FB700B1E2B8 /* ViewController.m in Sources */,
+				93345F0318260FB700B1E2B8 /* AppDelegate.m in Sources */,
+				93345EFF18260FB700B1E2B8 /* main.m in Sources */,
+				93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */,
+				9331297F18293BE700F44449 /* FoldableQuadImageView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93345F0C18260FB700B1E2B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93345F1E18260FB700B1E2B8 /* FoldableTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		93345F1618260FB700B1E2B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93345EEE18260FB700B1E2B8 /* Foldable */;
+			targetProxy = 93345F1518260FB700B1E2B8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		93345EFB18260FB700B1E2B8 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				93345EFC18260FB700B1E2B8 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		93345F0418260FB700B1E2B8 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				93345F0518260FB700B1E2B8 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		93345F1A18260FB700B1E2B8 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				93345F1B18260FB700B1E2B8 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		93345F1F18260FB700B1E2B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		93345F2018260FB700B1E2B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		93345F2218260FB700B1E2B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Foldable/Foldable-Prefix.pch";
+				INFOPLIST_FILE = "Foldable/Foldable-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		93345F2318260FB700B1E2B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Foldable/Foldable-Prefix.pch";
+				INFOPLIST_FILE = "Foldable/Foldable-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		93345F2518260FB700B1E2B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Foldable.app/Foldable";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Foldable/Foldable-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "FoldableTests/FoldableTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		93345F2618260FB700B1E2B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Foldable.app/Foldable";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Foldable/Foldable-Prefix.pch";
+				INFOPLIST_FILE = "FoldableTests/FoldableTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		93345EEA18260FB700B1E2B8 /* Build configuration list for PBXProject "Foldable" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93345F1F18260FB700B1E2B8 /* Debug */,
+				93345F2018260FB700B1E2B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93345F2118260FB700B1E2B8 /* Build configuration list for PBXNativeTarget "Foldable" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93345F2218260FB700B1E2B8 /* Debug */,
+				93345F2318260FB700B1E2B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93345F2418260FB700B1E2B8 /* Build configuration list for PBXNativeTarget "FoldableTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93345F2518260FB700B1E2B8 /* Debug */,
+				93345F2618260FB700B1E2B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 93345EE718260FB700B1E2B8 /* Project object */;
+}
