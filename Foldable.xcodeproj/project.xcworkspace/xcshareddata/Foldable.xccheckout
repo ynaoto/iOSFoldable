@@ -5,19 +5,19 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>8A58B89E-983C-4679-8556-DDE802302E29</string>
+	<string>C1B3995E-522E-4939-95FA-409CD95C22CD</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Foldable</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>243824C8-5398-4801-B487-E3D606E4C1E3</key>
+		<key>6522EF4D-3831-42D6-A65B-5E05792E83CC</key>
 		<string>https://github.com/ynaoto/private.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>iOS/practice/Foldable/Foldable.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>243824C8-5398-4801-B487-E3D606E4C1E3</key>
+		<key>6522EF4D-3831-42D6-A65B-5E05792E83CC</key>
 		<string>../../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
@@ -25,16 +25,16 @@
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>243824C8-5398-4801-B487-E3D606E4C1E3</string>
+	<string>6522EF4D-3831-42D6-A65B-5E05792E83CC</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>243824C8-5398-4801-B487-E3D606E4C1E3</string>
+			<string>6522EF4D-3831-42D6-A65B-5E05792E83CC</string>
 			<key>IDESourceControlWCCName</key>
-			<string>ColorPages</string>
+			<string>CALayer</string>
 		</dict>
 	</array>
 </dict>

@@ -290,7 +290,7 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 
 - (void)swipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
-    NSLog(@"%s: dir = %u", __FUNCTION__, gestureRecognizer.direction);
+    NSLog(@"%s: dir = %d", __FUNCTION__, (int)gestureRecognizer.direction);
     
     CGPoint p = [gestureRecognizer locationInView:self];
     UISwipeGestureRecognizerDirection direction = gestureRecognizer.direction;

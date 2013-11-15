@@ -10,6 +10,17 @@
 
 @implementation QuadImageView
 
+static CALayer *makeQuater(CGFloat w, CGFloat h, CGFloat ax, CGFloat ay, NSString *gravity)
+{
+    CALayer *layer = [CALayer layer];
+//    layer.geometryFlipped = YES; // gravity 定数名との整合性を取るため
+    layer.contentsGravity = gravity;
+    layer.masksToBounds = YES;
+    layer.anchorPoint = CGPointMake(ax, ay);
+    layer.frame = CGRectMake((1.0 - ax) * w, (1.0 - ay) * h, w, h);
+    return layer;
+}
+
 - (void)setupQuadLayers
 {
     CGRect bounds = self.bounds;
@@ -21,39 +32,21 @@
     transform.m34 = -1.0/500;
     transformLayer.sublayerTransform = transform;
     transformLayer.frame = self.layer.bounds;
+//    transformLayer.geometryFlipped = YES; ///////
     [self.layer addSublayer:transformLayer];
 
-    // 以下における contentsRect を用いた行は、その下の２行で置き換えても良い。
-    _topLeftLayer = [CALayer layer];
-    _topLeftLayer.contentsRect = CGRectMake(0.0, 0.0, 0.5, 0.5);
-//    _topLeftLayer.contentsGravity = kCAGravityBottomLeft;
-//    _topLeftLayer.masksToBounds = YES;
-    _topLeftLayer.anchorPoint = CGPointMake(1.0, 1.0);
-    _topLeftLayer.frame = CGRectMake(0, 0, w, h);
+//    _topLeftLayer     = makeQuater(w, h, 1.0, 1.0, kCAGravityTopLeft);
+//    _topRightLayer    = makeQuater(w, h, 0.0, 1.0, kCAGravityTopRight);
+//    _bottomLeftLayer  = makeQuater(w, h, 1.0, 0.0, kCAGravityBottomLeft);
+//    _bottomRightLayer = makeQuater(w, h, 0.0, 0.0, kCAGravityBottomRight);
+    _topLeftLayer     = makeQuater(w, h, 1.0, 1.0, kCAGravityBottomLeft);
+    _topRightLayer    = makeQuater(w, h, 0.0, 1.0, kCAGravityBottomRight);
+    _bottomLeftLayer  = makeQuater(w, h, 1.0, 0.0, kCAGravityTopLeft);
+    _bottomRightLayer = makeQuater(w, h, 0.0, 0.0, kCAGravityTopRight);
+
     [transformLayer addSublayer:_topLeftLayer];
-
-    _topRightLayer = [CALayer layer];
-    _topRightLayer.contentsRect = CGRectMake(0.5, 0, 0.5, 0.5);
-//    _topRightLayer.contentsGravity = kCAGravityBottomRight;
-//    _topRightLayer.masksToBounds = YES;
-    _topRightLayer.anchorPoint = CGPointMake(0.0, 1.0);
-    _topRightLayer.frame = CGRectMake(w, 0, w, h);
     [transformLayer addSublayer:_topRightLayer];
-
-    _bottomLeftLayer = [CALayer layer];
-    _bottomLeftLayer.contentsRect = CGRectMake(0.0, 0.5, 0.5, 0.5);
-//    _bottomLeftLayer.contentsGravity = kCAGravityTopLeft;
-//    _bottomLeftLayer.masksToBounds = YES;
-    _bottomLeftLayer.anchorPoint = CGPointMake(1.0, 0.0);
-    _bottomLeftLayer.frame = CGRectMake(0, h, w, h);
     [transformLayer addSublayer:_bottomLeftLayer];
-
-    _bottomRightLayer = [CALayer layer];
-    _bottomRightLayer.contentsRect = CGRectMake(0.5, 0.5, 0.5, 0.5);
-//    _bottomRightLayer.contentsGravity = kCAGravityTopRight;
-//    _bottomRightLayer.masksToBounds = YES;
-    _bottomRightLayer.anchorPoint = CGPointMake(0.0, 0.0);
-    _bottomRightLayer.frame = CGRectMake(w, h, w, h);
     [transformLayer addSublayer:_bottomRightLayer];
 }
 
@@ -74,7 +67,7 @@
 
     self.image = nil;
     
-    [self setNeedsDisplay];
+    //[self setNeedsDisplay];
 }
 
 - (void)setImage:(UIImage *)image
