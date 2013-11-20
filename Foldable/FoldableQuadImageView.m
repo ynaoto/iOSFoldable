@@ -76,11 +76,11 @@ typedef NS_ENUM(int, FoldStatus) {
 
 - (void)tap:(UITapGestureRecognizer*)gestureRecognizer
 {
-    // 少し乱数を使って、全てのパタンを出すようにする
     NSLog(@"%s: status = %d", __FUNCTION__, status);
 
     CGPoint p = [gestureRecognizer locationInView:self];
     
+    // 少し乱数を使って、全てのパタンを出すようにする
     int n = arc4random();
     
     if (status == None) {
