@@ -7,111 +7,15 @@
 //
 
 #import "FoldableQuadImageView.h"
-#import <objc/runtime.h>
 
-@interface CABasicAnimation (XYRotation)
-
-+ (CABasicAnimation*)makeXRotationAnimation:(CGFloat)r;
-+ (CABasicAnimation*)makeYRotationAnimation:(CGFloat)r;
-
-@end
-
-@implementation CABasicAnimation (XYRotation)
-
-static const int kLargeNum = 10000; // M_PI の回転が、どちらむきになるかがわからないのを防ぐ
-static const CFTimeInterval kDuration = 0.8;
-
-+ (CABasicAnimation*)makeXRotationAnimation:(CGFloat)r
+static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
 {
-    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
-    
-    CATransform3D transform = CATransform3DIdentity;
-    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, (kLargeNum-1)*r/kLargeNum, 1.0, 0.0, 0.0)];
-    anim.duration = kDuration;
-    anim.repeatCount = 1;
-    anim.fillMode = kCAFillModeForwards;
-    anim.removedOnCompletion = NO;
-    
-    return anim;
-}
-
-+ (CABasicAnimation*)makeYRotationAnimation:(CGFloat)r
-{
-    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform"];
-    
-    CATransform3D transform = CATransform3DIdentity;
-    anim.toValue = [NSNumber valueWithCATransform3D:CATransform3DRotate(transform, (kLargeNum-1)*r/kLargeNum, 0.0, 1.0, 0.0)];
-    anim.duration = kDuration;
-    anim.repeatCount = 1;
-    anim.fillMode = kCAFillModeForwards;
-    anim.removedOnCompletion = NO;
-    
-    return anim;
-}
-
-@end
-
-@interface CALayer (Foldable)
-@property (nonatomic) BOOL folded;
-@property (nonatomic) CABasicAnimation *unfoldAnim;
-
-- (void)fold:(CABasicAnimation*)anim;
-- (void)unfold;
-
-@end
-
-@implementation CALayer (Foldable)
-
-static const void *kFolded = &kFolded;
-static const void *kUnfoldAnim = &kUnfoldAnim;
-
-- (BOOL)folded
-{
-    return [objc_getAssociatedObject(self, kFolded) boolValue];
-}
-
-- (void)setFolded:(BOOL)folded
-{
-    objc_setAssociatedObject(self, kFolded, [NSNumber numberWithBool:folded], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (CABasicAnimation *)unfoldAnim
-{
-    return objc_getAssociatedObject(self, kUnfoldAnim);
-}
-
-- (void)setUnfoldAnim:(CABasicAnimation *)unfoldAnim
-{
-    objc_setAssociatedObject(self, kUnfoldAnim, unfoldAnim, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)fold:(CABasicAnimation*)anim
-{
-    if (self.folded) {
-        NSLog(@"warning: the view has been folded");
-        return;
+    [CATransaction setAnimationDuration:0.8];
+    for (CALayer *layer in layers) {
+        layer.transform = CATransform3DMakeRotation(0.999*r, ax, ay, az);
     }
-
-    [self addAnimation:anim forKey:nil];
-    
-    self.folded = YES;
-    self.unfoldAnim = [anim copy];
-    self.unfoldAnim.toValue = nil; // just remove the animation
+    [CATransaction commit];
 }
-
-- (void)unfold
-{
-    if (!self.folded) {
-        NSLog(@"warning: the view has not been folded");
-        return;
-    }
-
-    [self addAnimation:self.unfoldAnim forKey:nil];
-    
-    self.folded = NO;
-}
-
-@end
 
 @interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
 
@@ -128,84 +32,56 @@ static const void *kUnfoldAnim = &kUnfoldAnim;
 - (void)foldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *foldDownAnim = [CABasicAnimation makeXRotationAnimation:-M_PI];
-    [self.topLeftLayer fold:foldDownAnim];
-    [self.topRightLayer fold:foldDownAnim];
-    
+    rotateLayers(@[self.topLeftLayer, self.topRightLayer], -M_PI, 1.0, 0.0, 0.0);
     foldedTopToBottom = YES;
 }
 
 - (void)unfoldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    [self.topRightLayer unfold];
-    [self.topLeftLayer unfold];
-    
+    rotateLayers(@[self.topLeftLayer, self.topRightLayer], 0, 1.0, 0.0, 0.0);
     foldedTopToBottom = NO;
 }
 
 - (void)foldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *foldUpAnim = [CABasicAnimation makeXRotationAnimation:M_PI];
-    [self.bottomLeftLayer fold:foldUpAnim];
-    [self.bottomRightLayer fold:foldUpAnim];
-    
+    rotateLayers(@[self.bottomLeftLayer, self.bottomRightLayer], M_PI, 1.0, 0.0, 0.0);
     foldedBottomToTop = YES;
 }
 
 - (void)unfoldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    [self.bottomRightLayer unfold];
-    [self.bottomLeftLayer unfold];
-    
+    rotateLayers(@[self.bottomLeftLayer, self.bottomRightLayer], 0, 1.0, 0.0, 0.0);
     foldedBottomToTop = NO;
 }
 
 - (void)foldLeftToRight
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *foldRightAnim = [CABasicAnimation makeYRotationAnimation:M_PI];
-    [self.topLeftLayer fold:foldRightAnim];
-    [self.bottomLeftLayer fold:foldRightAnim];
-    
+    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], M_PI, 0.0, 1.0, 0.0);
     foldedLeftToRight = YES;
 }
 
 - (void)unfoldRightToLeft
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    [self.topLeftLayer unfold];
-    [self.bottomLeftLayer unfold];
-    
+    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], 0, 0.0, 1.0, 0.0);
     foldedLeftToRight = NO;
 }
 
 - (void)foldRightToLeft
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    CABasicAnimation *foldLeftAnim = [CABasicAnimation makeYRotationAnimation:-M_PI];
-    [self.topRightLayer fold:foldLeftAnim];
-    [self.bottomRightLayer fold:foldLeftAnim];
-    
+    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], -M_PI, 0.0, 1.0, 0.0);
     foldedRightToLeft = YES;
 }
 
 - (void)unfoldLeftToRight
 {
     NSLog(@"%s", __FUNCTION__);
-    
-    [self.topRightLayer unfold];
-    [self.bottomRightLayer unfold];
-    
+    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], 0, 0.0, 1.0, 0.0);
     foldedRightToLeft = NO;
 }
 
