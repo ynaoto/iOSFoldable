@@ -8,16 +8,7 @@
 
 #import "FoldableQuadImageView.h"
 
-static void rotateLayersTo(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
-{
-    [CATransaction setAnimationDuration:0.8];
-    for (CALayer *layer in layers) {
-        layer.transform = CATransform3DMakeRotation(0.999*r, ax, ay, az);
-    }
-    [CATransaction commit];
-}
-
-static void rotateLayersBy(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
+static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
 {
     [CATransaction setAnimationDuration:0.8];
     for (CALayer *layer in layers) {
@@ -26,72 +17,21 @@ static void rotateLayersBy(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, C
     [CATransaction commit];
 }
 
+typedef NS_ENUM(int, FoldStatus) {
+    None = 0,
+    Right, RightUp, RightDown,
+    Left, LeftUp, LeftDown,
+    Up, UpRight, UpLeft,
+    Down, DownRight, DownLeft,
+};
+
 @interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
 
 @end
 
 @implementation FoldableQuadImageView
 {
-    BOOL foldedLeftToRight;
-    BOOL foldedRightToLeft;
-    BOOL foldedTopToBottom;
-    BOOL foldedBottomToTop;
-}
-
-- (void)foldTopToBottom
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topLeftLayer, self.topRightLayer], -M_PI, 1.0, 0.0, 0.0);
-    foldedTopToBottom = YES;
-}
-
-- (void)unfoldBottomToTop
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topLeftLayer, self.topRightLayer], 0, 1.0, 0.0, 0.0);
-    foldedTopToBottom = NO;
-}
-
-- (void)foldBottomToTop
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.bottomLeftLayer, self.bottomRightLayer], M_PI, 1.0, 0.0, 0.0);
-    foldedBottomToTop = YES;
-}
-
-- (void)unfoldTopToBottom
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.bottomLeftLayer, self.bottomRightLayer], 0, 1.0, 0.0, 0.0);
-    foldedBottomToTop = NO;
-}
-
-- (void)foldLeftToRight
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topLeftLayer, self.bottomLeftLayer], M_PI, 0.0, 1.0, 0.0);
-    foldedLeftToRight = YES;
-}
-
-- (void)unfoldRightToLeft
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topLeftLayer, self.bottomLeftLayer], 0, 0.0, 1.0, 0.0);
-    foldedLeftToRight = NO;
-}
-
-- (void)foldRightToLeft
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topRightLayer, self.bottomRightLayer], -M_PI, 0.0, 1.0, 0.0);
-    foldedRightToLeft = YES;
-}
-
-- (void)unfoldLeftToRight
-{
-    NSLog(@"%s", __FUNCTION__);
-    rotateLayersTo(@[self.topRightLayer, self.bottomRightLayer], 0, 0.0, 1.0, 0.0);
-    foldedRightToLeft = NO;
+    FoldStatus status;
 }
 
 - (BOOL)isTop:(CGPoint)p
@@ -114,129 +54,251 @@ static void rotateLayersBy(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, C
     return (self.frame.size.width / 2 <= p.x);
 }
 
+- (void)rotateRightLayers:(CGFloat)r
+{
+    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], r, 0.0, 1.0, 0.0);
+}
+
+- (void)rotateLeftLayers:(CGFloat)r
+{
+    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], r, 0.0, 1.0, 0.0);
+}
+
+- (void)rotateTopLayers:(CGFloat)r
+{
+    rotateLayers(@[self.topRightLayer, self.topLeftLayer], r, 1.0, 0.0, 0.0);
+}
+
+- (void)rotateBottomLayers:(CGFloat)r
+{
+    rotateLayers(@[self.bottomRightLayer, self.bottomLeftLayer], r, 1.0, 0.0, 0.0);
+}
+
 - (void)tap:(UITapGestureRecognizer*)gestureRecognizer
 {
-    NSLog(@"%s", __FUNCTION__);
+    // 少し乱数を使って、全てのパタンを出すようにする
+    NSLog(@"%s: status = %d", __FUNCTION__, status);
 
     CGPoint p = [gestureRecognizer locationInView:self];
-    if ([self isTop:p] && [self isLeft:p]) {
-        if (foldedLeftToRight) {
-            // do nothing
-        } else if (foldedRightToLeft) {
-            [self unfoldLeftToRight];
-        } else if (foldedTopToBottom) {
-            // do nothing
-        } else if (foldedBottomToTop) {
-            [self unfoldTopToBottom];
-        } else {
-            [self foldLeftToRight];
+    
+    int n = arc4random();
+    
+    if (status == None) {
+        // 左右に畳むか、上下に畳むか
+        if (n % 2 == 0) { // 左右
+            if ([self isLeft:p]) {
+                [self rotateLeftLayers:M_PI]; // 右に畳む
+                status = Right;
+            } else {
+                [self rotateRightLayers:-M_PI]; // 左に畳む
+                status = Left;
+            }
+        } else { // 上下
+            if ([self isBottom:p]) {
+                [self rotateBottomLayers:M_PI]; // 上に畳む
+                status = Up;
+            } else {
+                [self rotateTopLayers:-M_PI]; // 下に畳む
+                status = Down;
+            }
         }
-    } else if ([self isTop:p] && [self isRight:p]) {
-        if (foldedLeftToRight) {
-            [self unfoldRightToLeft];
-        } else if (foldedRightToLeft) {
-            // do nothing
-        } else if (foldedTopToBottom) {
-            // do nothing
-        } else if (foldedBottomToTop) {
-            [self unfoldTopToBottom];
-        } else {
-            [self foldRightToLeft];
+    } else if (status == Right && [self isRight:p]) {
+        // 左に開くか、上下に畳むか
+        if (n % 2 == 0) { // 左に開く
+            [self rotateLeftLayers:-M_PI]; // 左に開く
+            status = None;
+        } else { // 上下に畳む
+            if ([self isBottom:p]) {
+                [self rotateBottomLayers:-M_PI]; // 上に畳む
+                status = RightUp;
+            } else if ([self isTop:p]) {
+                [self rotateTopLayers:M_PI]; // 下に畳む
+                status = RightDown;
+            }
         }
-    } else if ([self isBottom:p] && [self isLeft:p]) {
-        if (foldedLeftToRight) {
-            // do nothing
-        } else if (foldedRightToLeft) {
-            [self unfoldLeftToRight];
-        } else if (foldedTopToBottom) {
-            [self unfoldBottomToTop];
-        } else if (foldedBottomToTop) {
-            // do nothing
-        } else {
-            [self foldLeftToRight];
+    } else if (status == RightUp && [self isRight:p] && [self isTop:p]) {
+        [self rotateBottomLayers:M_PI]; // 下に開く
+        status = Right;
+    } else if (status == RightDown && [self isRight:p] && [self isBottom:p]) {
+        [self rotateTopLayers:-M_PI]; // 上に開く
+        status = Right;
+    } else if (status == Left && [self isLeft:p]) {
+        // 右に開くか、上下に畳むか
+        if (n % 2 == 0) { // 右に開く
+            [self rotateRightLayers:M_PI]; // 右に開く
+            status = None;
+        } else { // 上下に畳む
+            if ([self isBottom:p]) {
+                [self rotateBottomLayers:-M_PI]; // 上に畳む
+                status = LeftUp;
+            } else if ([self isTop:p]) {
+                [self rotateTopLayers:M_PI]; // 下に畳む
+                status = LeftDown;
+            }
         }
-    } else if ([self isBottom:p] && [self isRight:p]) {
-        if (foldedLeftToRight) {
-            [self unfoldRightToLeft];
-        } else if (foldedRightToLeft) {
-            // do nothing
-        } else if (foldedTopToBottom) {
-            [self unfoldBottomToTop];
-        } else if (foldedBottomToTop) {
-            // do nothing
-        } else {
-            [self foldRightToLeft];
+    } else if (status == LeftUp && [self isLeft:p] && [self isTop:p]) {
+        [self rotateBottomLayers:M_PI]; // 下に開く
+        status = Left;
+    } else if (status == LeftDown && [self isLeft:p] && [self isBottom:p]) {
+        [self rotateTopLayers:-M_PI]; // 上に開く
+        status = Left;
+    } else if (status == Up && [self isTop:p]) {
+        // 下に開くか、左右に畳むか
+        if (n % 2 == 0) { // 下に開く
+            [self rotateBottomLayers:-M_PI]; // 下に開く
+            status = None;
+        } else { // 左右に畳む
+            if ([self isLeft:p]) {
+                [self rotateLeftLayers:-M_PI]; // 右へ畳む
+                status = UpRight;
+            } else if ([self isRight:p]) {
+                [self rotateRightLayers:M_PI]; // 左へ畳む
+                status = UpLeft;
+            }
         }
+    } else if (status == UpRight && [self isRight:p] && [self isTop:p]) {
+        [self rotateLeftLayers:M_PI]; // 左に開く
+        status = Up;
+    } else if (status == UpLeft && [self isLeft:p] && [self isTop:p]) {
+        [self rotateRightLayers:-M_PI]; // 右に開く
+        status = Up;
+    } else if (status == Down && [self isBottom:p]) {
+        // 上に開くか、左右に畳むか
+        if (n % 2 == 0) { // 上に開く
+            [self rotateTopLayers:M_PI]; // 上に開く
+            status = None;
+        } else { // 左右に畳む
+            if ([self isLeft:p]) {
+                [self rotateLeftLayers:-M_PI]; // 右に畳む
+                status = DownRight;
+            } else if ([self isRight:p]) {
+                [self rotateRightLayers:M_PI]; // 左に畳む
+                status = DownLeft;
+            }
+        }
+    } else if (status == DownRight && [self isRight:p] && [self isBottom:p]) {
+        [self rotateLeftLayers:M_PI]; // 左に開く
+        status = Down;
+    } else if (status == DownLeft && [self isLeft:p] && [self isBottom:p]) {
+        [self rotateRightLayers:-M_PI]; // 右に開く
+        status = Down;
     } else {
-        NSLog(@"can't happen");
-        abort();
+        NSLog(@"do nothing.");
     }
 }
 
 - (void)swipe:(UISwipeGestureRecognizer*)gestureRecognizer
 {
-    NSLog(@"%s: dir = %d", __FUNCTION__, (int)gestureRecognizer.direction);
+    NSLog(@"%s: dir = %d, status = %d", __FUNCTION__, (int)gestureRecognizer.direction, status);
     
     CGPoint p = [gestureRecognizer locationInView:self];
     UISwipeGestureRecognizerDirection direction = gestureRecognizer.direction;
-    if (foldedLeftToRight) {
-        if ([self isRight:p]) {
-            if (direction == UISwipeGestureRecognizerDirectionLeft) {
-                [self unfoldRightToLeft];
-            } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
-                NSLog(@"to down at right!"); ////////
-                rotateLayersBy(@[self.topLeftLayer, self.topRightLayer], M_PI, 1.0, 0.0, 0.0);
-            } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
-                NSLog(@"to up at right!"); ////////
-                rotateLayersBy(@[self.bottomLeftLayer, self.bottomRightLayer], -M_PI, 1.0, 0.0, 0.0);
-            }
+
+    if (status == None) {
+        // 左右に畳むか、上下に畳むか
+        if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateLeftLayers:M_PI]; // 右に畳む
+            status = Right;
+        } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateRightLayers:-M_PI]; // 左に畳む
+            status = Left;
+        } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateBottomLayers:M_PI]; // 上に畳む
+            status = Up;
+        } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateTopLayers:-M_PI]; // 下に畳む
+            status = Down;
         }
-    } else if (foldedRightToLeft) {
-        if ([self isLeft:p]) {
-            if (direction == UISwipeGestureRecognizerDirectionRight) {
-                [self unfoldLeftToRight];
-            } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
-                NSLog(@"to down at left!"); ////////
-                rotateLayersBy(@[self.topLeftLayer, self.topRightLayer], M_PI, 1.0, 0.0, 0.0);
-            } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
-                NSLog(@"to up at left!"); ////////
-                rotateLayersBy(@[self.bottomLeftLayer, self.bottomRightLayer], -M_PI, 1.0, 0.0, 0.0);
-            }
+    } else if (status == Right && [self isRight:p]) {
+        // 左に開くか、上下に畳むか
+        if (direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateLeftLayers:-M_PI]; // 左に開く
+            status = None;
+        } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateBottomLayers:-M_PI]; // 上に畳む
+            status = RightUp;
+        } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateTopLayers:M_PI]; // 下に畳む
+            status = RightDown;
         }
-    } else if (foldedTopToBottom) {
-        if ([self isBottom:p]) {
-            if (direction == UISwipeGestureRecognizerDirectionUp) {
-                [self unfoldBottomToTop];
-            } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
-                NSLog(@"to right at bottom!"); ////////
-                rotateLayersBy(@[self.topLeftLayer, self.bottomLeftLayer], -M_PI, 0.0, 1.0, 0.0);
-            } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
-                NSLog(@"to left at bottom!"); ////////
-                rotateLayersBy(@[self.topRightLayer, self.bottomRightLayer], M_PI, 0.0, 1.0, 0.0);
-            }
+    } else if (status == RightUp && [self isRight:p] && [self isTop:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateBottomLayers:M_PI]; // 下に開く
+            status = Right;
         }
-    } else if (foldedBottomToTop) {
-        if ([self isTop:p]) {
-            if (direction == UISwipeGestureRecognizerDirectionDown) {
-                [self unfoldTopToBottom];
-            } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
-                NSLog(@"to right at top!"); ////////
-                rotateLayersBy(@[self.topLeftLayer, self.bottomLeftLayer], -M_PI, 0.0, 1.0, 0.0);
-            } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
-                NSLog(@"to left at top!"); ////////
-                rotateLayersBy(@[self.topRightLayer, self.bottomRightLayer], M_PI, 0.0, 1.0, 0.0);
-            }
+    } else if (status == RightDown && [self isRight:p] && [self isBottom:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateTopLayers:-M_PI]; // 上に開く
+            status = Right;
+        }
+    } else if (status == Left && [self isLeft:p]) {
+        // 右に開くか、上下に畳むか
+        if (direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateRightLayers:M_PI]; // 右に開く
+            status = None;
+        } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateBottomLayers:-M_PI]; // 上に畳む
+            status = LeftUp;
+        } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateTopLayers:M_PI]; // 下に畳む
+            status = LeftDown;
+        }
+    } else if (status == LeftUp && [self isLeft:p] && [self isTop:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateBottomLayers:M_PI]; // 下に開く
+            status = Left;
+        }
+    } else if (status == LeftDown && [self isLeft:p] && [self isBottom:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateTopLayers:-M_PI]; // 上に開く
+            status = Left;
+        }
+    } else if (status == Up && [self isTop:p]) {
+        // 下に開くか、左右に畳むか
+        if (direction == UISwipeGestureRecognizerDirectionDown) {
+            [self rotateBottomLayers:-M_PI]; // 下に開く
+            status = None;
+        } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateLeftLayers:-M_PI]; // 右へ畳む
+            status = UpRight;
+        } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateRightLayers:M_PI]; // 左へ畳む
+            status = UpLeft;
+        }
+    } else if (status == UpRight && [self isRight:p] && [self isTop:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateLeftLayers:M_PI]; // 左に開く
+            status = Up;
+        }
+    } else if (status == UpLeft && [self isLeft:p] && [self isTop:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateRightLayers:-M_PI]; // 右に開く
+            status = Up;
+        }
+    } else if (status == Down && [self isBottom:p]) {
+        // 上に開くか、左右に畳むか
+        if (direction == UISwipeGestureRecognizerDirectionUp) {
+            [self rotateTopLayers:M_PI]; // 上に開く
+            status = None;
+        } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateLeftLayers:-M_PI]; // 右に畳む
+            status = DownRight;
+        } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateRightLayers:M_PI]; // 左に畳む
+            status = DownLeft;
+        }
+    } else if (status == DownRight && [self isRight:p] && [self isBottom:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self rotateLeftLayers:M_PI]; // 左に開く
+            status = Down;
+        }
+    } else if (status == DownLeft && [self isLeft:p] && [self isBottom:p]) {
+        if (direction == UISwipeGestureRecognizerDirectionRight) {
+            [self rotateRightLayers:-M_PI]; // 右に開く
+            status = Down;
         }
     } else {
-        if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
-            [self foldLeftToRight];
-        } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
-            [self foldRightToLeft];
-        } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
-            [self foldTopToBottom];
-        } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
-            [self foldBottomToTop];
-        }
+        NSLog(@"do nothing.");
     }
 }
 
