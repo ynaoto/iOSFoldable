@@ -8,11 +8,20 @@
 
 #import "FoldableQuadImageView.h"
 
-static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
+static void rotateLayersTo(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
 {
     [CATransaction setAnimationDuration:0.8];
     for (CALayer *layer in layers) {
         layer.transform = CATransform3DMakeRotation(0.999*r, ax, ay, az);
+    }
+    [CATransaction commit];
+}
+
+static void rotateLayersBy(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
+{
+    [CATransaction setAnimationDuration:0.8];
+    for (CALayer *layer in layers) {
+        layer.transform = CATransform3DRotate(layer.transform, 0.999*r, ax, ay, az);
     }
     [CATransaction commit];
 }
@@ -32,77 +41,77 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
 - (void)foldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topLeftLayer, self.topRightLayer], -M_PI, 1.0, 0.0, 0.0);
+    rotateLayersTo(@[self.topLeftLayer, self.topRightLayer], -M_PI, 1.0, 0.0, 0.0);
     foldedTopToBottom = YES;
 }
 
 - (void)unfoldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topLeftLayer, self.topRightLayer], 0, 1.0, 0.0, 0.0);
+    rotateLayersTo(@[self.topLeftLayer, self.topRightLayer], 0, 1.0, 0.0, 0.0);
     foldedTopToBottom = NO;
 }
 
 - (void)foldBottomToTop
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.bottomLeftLayer, self.bottomRightLayer], M_PI, 1.0, 0.0, 0.0);
+    rotateLayersTo(@[self.bottomLeftLayer, self.bottomRightLayer], M_PI, 1.0, 0.0, 0.0);
     foldedBottomToTop = YES;
 }
 
 - (void)unfoldTopToBottom
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.bottomLeftLayer, self.bottomRightLayer], 0, 1.0, 0.0, 0.0);
+    rotateLayersTo(@[self.bottomLeftLayer, self.bottomRightLayer], 0, 1.0, 0.0, 0.0);
     foldedBottomToTop = NO;
 }
 
 - (void)foldLeftToRight
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], M_PI, 0.0, 1.0, 0.0);
+    rotateLayersTo(@[self.topLeftLayer, self.bottomLeftLayer], M_PI, 0.0, 1.0, 0.0);
     foldedLeftToRight = YES;
 }
 
 - (void)unfoldRightToLeft
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], 0, 0.0, 1.0, 0.0);
+    rotateLayersTo(@[self.topLeftLayer, self.bottomLeftLayer], 0, 0.0, 1.0, 0.0);
     foldedLeftToRight = NO;
 }
 
 - (void)foldRightToLeft
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], -M_PI, 0.0, 1.0, 0.0);
+    rotateLayersTo(@[self.topRightLayer, self.bottomRightLayer], -M_PI, 0.0, 1.0, 0.0);
     foldedRightToLeft = YES;
 }
 
 - (void)unfoldLeftToRight
 {
     NSLog(@"%s", __FUNCTION__);
-    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], 0, 0.0, 1.0, 0.0);
+    rotateLayersTo(@[self.topRightLayer, self.bottomRightLayer], 0, 0.0, 1.0, 0.0);
     foldedRightToLeft = NO;
 }
 
-- (BOOL)isTopLeft:(CGPoint)p
+- (BOOL)isTop:(CGPoint)p
 {
-    return (p.x <= self.frame.size.width / 2) && (p.y <= self.frame.size.height / 2);
+    return (p.y <= self.frame.size.height / 2);
 }
 
-- (BOOL)isTopRight:(CGPoint)p
+- (BOOL)isBottom:(CGPoint)p
 {
-    return (self.frame.size.width / 2 <= p.x) && (p.y <= self.frame.size.height / 2);
+    return (self.frame.size.height / 2 <= p.y);
 }
 
-- (BOOL)isBottomLeft:(CGPoint)p
+- (BOOL)isLeft:(CGPoint)p
 {
-    return (p.x <= self.frame.size.width / 2) && (self.frame.size.height / 2 <= p.y);
+    return (p.x <= self.frame.size.width / 2);
 }
 
-- (BOOL)isBottomRight:(CGPoint)p
+- (BOOL)isRight:(CGPoint)p
 {
-    return (self.frame.size.width / 2 <= p.x) && (self.frame.size.height / 2 <= p.y);
+    return (self.frame.size.width / 2 <= p.x);
 }
 
 - (void)tap:(UITapGestureRecognizer*)gestureRecognizer
@@ -110,7 +119,7 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
     NSLog(@"%s", __FUNCTION__);
 
     CGPoint p = [gestureRecognizer locationInView:self];
-    if ([self isTopLeft:p]) {
+    if ([self isTop:p] && [self isLeft:p]) {
         if (foldedLeftToRight) {
             // do nothing
         } else if (foldedRightToLeft) {
@@ -122,7 +131,7 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
         } else {
             [self foldLeftToRight];
         }
-    } else if ([self isTopRight:p]) {
+    } else if ([self isTop:p] && [self isRight:p]) {
         if (foldedLeftToRight) {
             [self unfoldRightToLeft];
         } else if (foldedRightToLeft) {
@@ -134,7 +143,7 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
         } else {
             [self foldRightToLeft];
         }
-    } else if ([self isBottomLeft:p]) {
+    } else if ([self isBottom:p] && [self isLeft:p]) {
         if (foldedLeftToRight) {
             // do nothing
         } else if (foldedRightToLeft) {
@@ -146,7 +155,7 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
         } else {
             [self foldLeftToRight];
         }
-    } else if ([self isBottomRight:p]) {
+    } else if ([self isBottom:p] && [self isRight:p]) {
         if (foldedLeftToRight) {
             [self unfoldRightToLeft];
         } else if (foldedRightToLeft) {
@@ -170,89 +179,64 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
     
     CGPoint p = [gestureRecognizer locationInView:self];
     UISwipeGestureRecognizerDirection direction = gestureRecognizer.direction;
-    if ([self isTopLeft:p]) {
-        if (foldedLeftToRight) {
-            // do nothing
-        } else if (foldedRightToLeft) {
-            if (direction == UISwipeGestureRecognizerDirectionRight) {
-                [self unfoldLeftToRight];
-            }
-        } else if (foldedTopToBottom) {
-            // do nothing
-        } else if (foldedBottomToTop) {
-            if (direction == UISwipeGestureRecognizerDirectionDown) {
-                [self unfoldTopToBottom];
-            }
-        } else {
-            if (direction == UISwipeGestureRecognizerDirectionRight) {
-                [self foldLeftToRight];
-            } else if (direction == UISwipeGestureRecognizerDirectionDown) {
-                [self foldTopToBottom];
-            }
-        }
-    } else if ([self isTopRight:p]) {
-        if (foldedLeftToRight) {
+    if (foldedLeftToRight) {
+        if ([self isRight:p]) {
             if (direction == UISwipeGestureRecognizerDirectionLeft) {
                 [self unfoldRightToLeft];
-            }
-        } else if (foldedRightToLeft) {
-            // do nothing
-        } else if (foldedTopToBottom) {
-            // do nothing
-        } else if (foldedBottomToTop) {
-            if (direction == UISwipeGestureRecognizerDirectionDown) {
-                [self unfoldTopToBottom];
-            }
-        } else {
-            if (direction == UISwipeGestureRecognizerDirectionLeft) {
-                [self foldRightToLeft];
-            } else if (direction == UISwipeGestureRecognizerDirectionDown) {
-                [self foldTopToBottom];
+            } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+                NSLog(@"to down at right!"); ////////
+                rotateLayersBy(@[self.topLeftLayer, self.topRightLayer], M_PI, 1.0, 0.0, 0.0);
+            } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+                NSLog(@"to up at right!"); ////////
+                rotateLayersBy(@[self.bottomLeftLayer, self.bottomRightLayer], -M_PI, 1.0, 0.0, 0.0);
             }
         }
-    } else if ([self isBottomLeft:p]) {
-        if (foldedLeftToRight) {
-            // do nothing
-        } else if (foldedRightToLeft) {
+    } else if (foldedRightToLeft) {
+        if ([self isLeft:p]) {
             if (direction == UISwipeGestureRecognizerDirectionRight) {
                 [self unfoldLeftToRight];
-            }
-        } else if (foldedTopToBottom) {
-            if (direction == UISwipeGestureRecognizerDirectionUp) {
-                [self unfoldBottomToTop];
-            }
-        } else if (foldedBottomToTop) {
-            // do nothing
-        } else {
-            if (direction == UISwipeGestureRecognizerDirectionRight) {
-                [self foldLeftToRight];
-            } else if (direction == UISwipeGestureRecognizerDirectionUp) {
-                [self foldBottomToTop];
+            } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+                NSLog(@"to down at left!"); ////////
+                rotateLayersBy(@[self.topLeftLayer, self.topRightLayer], M_PI, 1.0, 0.0, 0.0);
+            } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+                NSLog(@"to up at left!"); ////////
+                rotateLayersBy(@[self.bottomLeftLayer, self.bottomRightLayer], -M_PI, 1.0, 0.0, 0.0);
             }
         }
-    } else if ([self isBottomRight:p]) {
-        if (foldedLeftToRight) {
-            if (direction == UISwipeGestureRecognizerDirectionLeft) {
-                [self unfoldRightToLeft];
-            }
-        } else if (foldedRightToLeft) {
-            // do nothing
-        } else if (foldedTopToBottom) {
+    } else if (foldedTopToBottom) {
+        if ([self isBottom:p]) {
             if (direction == UISwipeGestureRecognizerDirectionUp) {
                 [self unfoldBottomToTop];
+            } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+                NSLog(@"to right at bottom!"); ////////
+                rotateLayersBy(@[self.topLeftLayer, self.bottomLeftLayer], -M_PI, 0.0, 1.0, 0.0);
+            } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+                NSLog(@"to left at bottom!"); ////////
+                rotateLayersBy(@[self.topRightLayer, self.bottomRightLayer], M_PI, 0.0, 1.0, 0.0);
             }
-        } else if (foldedBottomToTop) {
-            // do nothing
-        } else {
-            if (direction == UISwipeGestureRecognizerDirectionLeft) {
-                [self foldRightToLeft];
-            } else if (direction == UISwipeGestureRecognizerDirectionUp) {
-                [self foldBottomToTop];
+        }
+    } else if (foldedBottomToTop) {
+        if ([self isTop:p]) {
+            if (direction == UISwipeGestureRecognizerDirectionDown) {
+                [self unfoldTopToBottom];
+            } else if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+                NSLog(@"to right at top!"); ////////
+                rotateLayersBy(@[self.topLeftLayer, self.bottomLeftLayer], -M_PI, 0.0, 1.0, 0.0);
+            } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+                NSLog(@"to left at top!"); ////////
+                rotateLayersBy(@[self.topRightLayer, self.bottomRightLayer], M_PI, 0.0, 1.0, 0.0);
             }
         }
     } else {
-        NSLog(@"can't happen");
-        abort();
+        if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
+            [self foldLeftToRight];
+        } else if ([self isRight:p] && direction == UISwipeGestureRecognizerDirectionLeft) {
+            [self foldRightToLeft];
+        } else if ([self isTop:p] && direction == UISwipeGestureRecognizerDirectionDown) {
+            [self foldTopToBottom];
+        } else if ([self isBottom:p] && direction == UISwipeGestureRecognizerDirectionUp) {
+            [self foldBottomToTop];
+        }
     }
 }
 
