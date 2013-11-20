@@ -53,12 +53,9 @@
     CGFloat w = bounds.size.width / 2;
     CGFloat h = bounds.size.height / 2;
     
-    CATransformLayer *transformLayer = [CATransformLayer layer];
-    CATransform3D transform = transformLayer.sublayerTransform;
+    CATransform3D transform = self.layer.sublayerTransform;
     transform.m34 = -1.0/500;
-    transformLayer.sublayerTransform = transform;
-    transformLayer.frame = self.layer.bounds;
-    [self.layer addSublayer:transformLayer];
+    self.layer.sublayerTransform = transform;
 
     CGSize size = CGSizeMake(w, h);
     _topLeftLayer     = [self makeQuaterWithSize:size anchorPoint:CGPointMake(1.0, 1.0)];
@@ -67,10 +64,10 @@
     _bottomRightLayer = [self makeQuaterWithSize:size anchorPoint:CGPointMake(0.0, 0.0)];
     [self setupGravity];
     
-    [transformLayer addSublayer:_topLeftLayer];
-    [transformLayer addSublayer:_topRightLayer];
-    [transformLayer addSublayer:_bottomLeftLayer];
-    [transformLayer addSublayer:_bottomRightLayer];
+    [self.layer addSublayer:_topLeftLayer];
+    [self.layer addSublayer:_topRightLayer];
+    [self.layer addSublayer:_bottomLeftLayer];
+    [self.layer addSublayer:_bottomRightLayer];
 }
 
 - (void)setupQuadImages
