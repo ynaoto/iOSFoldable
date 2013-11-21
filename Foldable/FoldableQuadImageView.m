@@ -13,6 +13,9 @@
 @end
 
 @implementation FoldableQuadImageView
+{
+    CGPoint panVelocity;
+}
 
 - (BOOL)isTop:(CGPoint)p
 {
@@ -255,6 +258,10 @@
     CGPoint p = [gestureRecognizer locationInView:self];
     UISwipeGestureRecognizerDirection direction = gestureRecognizer.direction;
 
+    float dv = hypotf(panVelocity.x, panVelocity.y);
+    NSLog(@"panVelocity = (%f, %f), dv = %f", panVelocity.x, panVelocity.y, dv);
+    self.animationDuration = 500 / dv;
+    
     if (self.status == FoldStatusNone) {
         // 左右に畳むか、上下に畳むか
         if ([self isLeft:p] && direction == UISwipeGestureRecognizerDirectionRight) {
@@ -339,37 +346,49 @@
     }
 }
 
+- (void)pan:(UIPanGestureRecognizer*)gestureRecognizer
+{
+//    NSLog(@"%s: status = %d", __FUNCTION__, self.status);
+    
+    panVelocity = [gestureRecognizer velocityInView:self];
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
 }
 
-- (void)setupGestureRecognizers:(UIView*)view tapAction:(SEL)tapAction swipeAction:(SEL)swipeAction
+- (void)setupGestureRecognizers
 {
     UITapGestureRecognizer *tapGestureRecognizer;
     
-    tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:tapAction];
-    [view addGestureRecognizer:tapGestureRecognizer];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+    [self addGestureRecognizer:tapGestureRecognizer];
     
     UISwipeGestureRecognizer *swipeGestureRecognizer;
     
-    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
     swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-    [view addGestureRecognizer:swipeGestureRecognizer];
+    [self addGestureRecognizer:swipeGestureRecognizer];
     
-    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
     swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
-    [view addGestureRecognizer:swipeGestureRecognizer];
+    [self addGestureRecognizer:swipeGestureRecognizer];
     
-    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
     swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-    [view addGestureRecognizer:swipeGestureRecognizer];
+    [self addGestureRecognizer:swipeGestureRecognizer];
     
-    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
     swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
-    [view addGestureRecognizer:swipeGestureRecognizer];
+    [self addGestureRecognizer:swipeGestureRecognizer];
+
+    UIPanGestureRecognizer *panGestureRecognizer;
+
+    panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
+    [self addGestureRecognizer:panGestureRecognizer];
     
-    for (UIGestureRecognizer *g in view.gestureRecognizers) {
+    for (UIGestureRecognizer *g in self.gestureRecognizers) {
         g.delegate = self;
     }
 }
@@ -379,9 +398,7 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         self.userInteractionEnabled = YES;
-        [self setupGestureRecognizers:self
-                            tapAction:@selector(tap:)
-                          swipeAction:@selector(swipe:)];
+        [self setupGestureRecognizers];
         self.status = FoldStatusNone;
         self.animationDuration = 0.8;
     }
