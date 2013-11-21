@@ -8,15 +8,6 @@
 
 #import "FoldableQuadImageView.h"
 
-static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGFloat az)
-{
-    [CATransaction setAnimationDuration:0.8];
-    for (CALayer *layer in layers) {
-        layer.transform = CATransform3DRotate(layer.transform, 0.999*r, ax, ay, az);
-    }
-    [CATransaction commit];
-}
-
 @interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
 
 @end
@@ -43,24 +34,33 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
     return (self.frame.size.width / 2 <= p.x);
 }
 
+- (void)rotateLayers:(NSArray *)layers r:(CGFloat)r ax:(CGFloat)ax ay:(CGFloat)ay az:(CGFloat)az
+{
+    [CATransaction setAnimationDuration:self.animationDuration];
+    for (CALayer *layer in layers) {
+        layer.transform = CATransform3DRotate(layer.transform, 0.999*r, ax, ay, az);
+    }
+    [CATransaction commit];
+}
+
 - (void)rotateRightLayers:(CGFloat)r
 {
-    rotateLayers(@[self.topRightLayer, self.bottomRightLayer], r, 0.0, 1.0, 0.0);
+    [self rotateLayers:@[self.topRightLayer, self.bottomRightLayer] r:r ax:0.0 ay:1.0 az:0.0];
 }
 
 - (void)rotateLeftLayers:(CGFloat)r
 {
-    rotateLayers(@[self.topLeftLayer, self.bottomLeftLayer], r, 0.0, 1.0, 0.0);
+    [self rotateLayers:@[self.topLeftLayer, self.bottomLeftLayer] r:r ax:0.0 ay:1.0 az:0.0];
 }
 
 - (void)rotateTopLayers:(CGFloat)r
 {
-    rotateLayers(@[self.topRightLayer, self.topLeftLayer], r, 1.0, 0.0, 0.0);
+    [self rotateLayers:@[self.topRightLayer, self.topLeftLayer] r:r ax:1.0 ay:0.0 az:0.0];
 }
 
 - (void)rotateBottomLayers:(CGFloat)r
 {
-    rotateLayers(@[self.bottomRightLayer, self.bottomLeftLayer], r, 1.0, 0.0, 0.0);
+    [self rotateLayers:@[self.bottomRightLayer, self.bottomLeftLayer] r:r ax:1.0 ay:0.0 az:0.0];
 }
 
 - (void)setStatus:(FoldStatus)status
@@ -380,6 +380,8 @@ static void rotateLayers(NSArray *layers, CGFloat r, CGFloat ax, CGFloat ay, CGF
         [self setupGestureRecognizers:self
                             tapAction:@selector(tap:)
                           swipeAction:@selector(swipe:)];
+        self.status = FoldStatusNone;
+        self.animationDuration = 0.8;
     }
     return self;
 }

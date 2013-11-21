@@ -11,15 +11,22 @@
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet FoldableQuadImageView *quadView;
+@property (weak, nonatomic) IBOutlet UILabel *animationDurationLabel;
 
 @end
 
 @implementation ViewController
 
+- (void)updateAnimationDurationLabel
+{
+    self.animationDurationLabel.text = [NSString stringWithFormat:@"%f", self.quadView.animationDuration];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    [self updateAnimationDurationLabel];
 }
 
 - (void)didReceiveMemoryWarning
@@ -30,6 +37,10 @@
 
 - (IBAction)useGeometryFlippingChanged:(UISwitch *)sender {
     self.quadView.useGeometryFlipping = sender.on;
+}
+- (IBAction)animationDurationChanged:(UISlider *)sender {
+    [self updateAnimationDurationLabel];
+    self.quadView.animationDuration = sender.value;
 }
 
 @end

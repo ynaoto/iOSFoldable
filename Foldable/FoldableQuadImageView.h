@@ -18,5 +18,6 @@ typedef NS_ENUM(int, FoldStatus) {
 
 @interface FoldableQuadImageView : QuadImageView
 @property (nonatomic) FoldStatus status;
+@property (nonatomic) CFTimeInterval animationDuration;
 
 @end
