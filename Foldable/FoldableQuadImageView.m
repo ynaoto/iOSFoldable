@@ -346,26 +346,28 @@
 
 - (void)setupGestureRecognizers:(UIView*)view tapAction:(SEL)tapAction swipeAction:(SEL)swipeAction
 {
-    UIGestureRecognizer *gestureRecognizer;
+    UITapGestureRecognizer *tapGestureRecognizer;
     
-    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:tapAction];
-    [view addGestureRecognizer:gestureRecognizer];
+    tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:tapAction];
+    [view addGestureRecognizer:tapGestureRecognizer];
     
-    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
-    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionRight;
-    [view addGestureRecognizer:gestureRecognizer];
+    UISwipeGestureRecognizer *swipeGestureRecognizer;
     
-    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
-    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionLeft;
-    [view addGestureRecognizer:gestureRecognizer];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [view addGestureRecognizer:swipeGestureRecognizer];
     
-    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
-    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionUp;
-    [view addGestureRecognizer:gestureRecognizer];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+    [view addGestureRecognizer:swipeGestureRecognizer];
     
-    gestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
-    ((UISwipeGestureRecognizer*)gestureRecognizer).direction = UISwipeGestureRecognizerDirectionDown;
-    [view addGestureRecognizer:gestureRecognizer];
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+    [view addGestureRecognizer:swipeGestureRecognizer];
+    
+    swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:swipeAction];
+    swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+    [view addGestureRecognizer:swipeGestureRecognizer];
     
     for (UIGestureRecognizer *g in view.gestureRecognizers) {
         g.delegate = self;
