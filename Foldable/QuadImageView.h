@@ -15,5 +15,6 @@
 @property (strong, nonatomic, readonly) CALayer *bottomRightLayer;
 
 @property (nonatomic) BOOL useGeometryFlipping;
+@property (nonatomic) CGFloat alpha;
 
 @end

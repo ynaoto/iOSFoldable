@@ -12,21 +12,32 @@
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet FoldableQuadImageView *quadView;
 @property (weak, nonatomic) IBOutlet UILabel *animationDurationLabel;
+@property (weak, nonatomic) IBOutlet UILabel *alphaLabel;
 
 @end
 
 @implementation ViewController
 
-- (void)updateAnimationDurationLabel
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+    NSLog(@"%s; keyPath = [%@], change = %@", __FUNCTION__, keyPath, change);
     self.animationDurationLabel.text = [NSString stringWithFormat:@"%f", self.quadView.animationDuration];
+    self.alphaLabel.text = [NSString stringWithFormat:@"%f", self.quadView.alpha];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    [self updateAnimationDurationLabel];
+    
+    [self.quadView addObserver:self
+                    forKeyPath:@"animationDuration"
+                       options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew
+                       context:nil];
+    [self.quadView addObserver:self
+                    forKeyPath:@"alpha"
+                       options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew
+                       context:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -38,9 +49,13 @@
 - (IBAction)useGeometryFlippingChanged:(UISwitch *)sender {
     self.quadView.useGeometryFlipping = sender.on;
 }
+
 - (IBAction)animationDurationChanged:(UISlider *)sender {
-    [self updateAnimationDurationLabel];
     self.quadView.animationDuration = sender.value;
+}
+
+- (IBAction)alphaChanged:(UISlider *)sender {
+    self.quadView.alpha = sender.value;
 }
 
 @end

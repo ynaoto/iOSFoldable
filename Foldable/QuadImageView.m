@@ -36,6 +36,15 @@
     [self setupGravity];
 }
 
+- (void)setAlpha:(CGFloat)alpha
+{
+    _topLeftLayer.opacity = alpha;
+    _topRightLayer.opacity = alpha;
+    _bottomLeftLayer.opacity = alpha;
+    _bottomRightLayer.opacity = alpha;
+    _alpha = alpha;
+}
+
 - (CALayer*)makeQuaterWithSize:(CGSize)size anchorPoint:(CGPoint)anchorPoint
 {
     CALayer *layer = [CALayer layer];
