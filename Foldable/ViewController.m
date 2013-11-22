@@ -22,8 +22,13 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     NSLog(@"%s; keyPath = [%@], change = %@", __FUNCTION__, keyPath, change);
-    self.animationDurationLabel.text = [NSString stringWithFormat:@"%f", self.quadView.animationDuration];
-    self.animationDurationSlider.value = self.quadView.animationDuration;
+    NSTimeInterval dur = self.quadView.animationDuration;
+    self.animationDurationLabel.text = [NSString stringWithFormat:@"%f", dur];
+//    self.animationDurationSlider.value = dur; // no animation as documented
+//    [self.animationDurationSlider setValue:dur animated:YES]; // not works on iOS7
+    [UIView animateWithDuration:0.25 animations:^{ // works
+        [self.animationDurationSlider setValue:dur animated:YES];
+    }];
     self.alphaLabel.text = [NSString stringWithFormat:@"%f", self.quadView.alpha];
 }
 
