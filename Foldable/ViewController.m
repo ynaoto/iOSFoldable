@@ -12,6 +12,7 @@
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet FoldableQuadImageView *quadView;
 @property (weak, nonatomic) IBOutlet UILabel *animationDurationLabel;
+@property (weak, nonatomic) IBOutlet UISlider *animationDurationSlider;
 @property (weak, nonatomic) IBOutlet UILabel *alphaLabel;
 
 @end
@@ -22,6 +23,7 @@
 {
     NSLog(@"%s; keyPath = [%@], change = %@", __FUNCTION__, keyPath, change);
     self.animationDurationLabel.text = [NSString stringWithFormat:@"%f", self.quadView.animationDuration];
+    self.animationDurationSlider.value = self.quadView.animationDuration;
     self.alphaLabel.text = [NSString stringWithFormat:@"%f", self.quadView.alpha];
 }
 

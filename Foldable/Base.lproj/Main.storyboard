@@ -88,6 +88,7 @@
                     <connections>
                         <outlet property="alphaLabel" destination="UiR-aL-qqk" id="Rdf-R1-maS"/>
                         <outlet property="animationDurationLabel" destination="BmX-VH-8T8" id="OUU-C9-yx4"/>
+                        <outlet property="animationDurationSlider" destination="Cb6-ev-6d4" id="VaG-zD-XTT"/>
                         <outlet property="quadView" destination="j46-dm-rgq" id="rKG-Ii-LJS"/>
                     </connections>
                 </viewController>
