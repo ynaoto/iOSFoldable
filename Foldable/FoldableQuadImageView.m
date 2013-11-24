@@ -37,6 +37,52 @@
     return (self.frame.size.width / 2 <= p.x);
 }
 
+- (void)setLayersVisibility:(FoldStatus)status
+{
+    NSArray *visibles, *invisibles;
+    CALayer *TR = self.topRightLayer;
+    CALayer *TL = self.topLeftLayer;
+    CALayer *BR = self.bottomRightLayer;
+    CALayer *BL = self.bottomLeftLayer;
+    
+    if (self.alpha < 1.0) {
+        visibles = @[ TL, TR, BL, BR ]; invisibles = @[];
+    } else {
+        switch (status) {
+            case FoldStatusNone:      visibles = @[ TL, TR, BL, BR ]; invisibles = @[]; break;
+            case FoldStatusRight:     visibles = @[ TL, BL ]; invisibles = @[ TR, BR ]; break;
+            case FoldStatusRightUp:   visibles = @[ BR ]; invisibles = @[ TL, TR, BL ]; break;
+            case FoldStatusRightDown: visibles = @[ TR ]; invisibles = @[ TL, BL, BR ]; break;
+            case FoldStatusLeft:      visibles = @[ TR, BR ]; invisibles = @[ TL, BL ]; break;
+            case FoldStatusLeftUp:    visibles = @[ BL ]; invisibles = @[ TL, TR, BR ]; break;
+            case FoldStatusLeftDown:  visibles = @[ TL ]; invisibles = @[ TR, BL, BR ]; break;
+            case FoldStatusUp:        visibles = @[ BL, BR ]; invisibles = @[ TL, TR ]; break;
+            case FoldStatusUpRight:   visibles = @[ TL ]; invisibles = @[ TR, BL, BR ]; break;
+            case FoldStatusUpLeft:    visibles = @[ TR ]; invisibles = @[ TL, BL, BR ]; break;
+            case FoldStatusDown:      visibles = @[ TL, TR ]; invisibles = @[ BL, BR ]; break;
+            case FoldStatusDownRight: visibles = @[ BL ]; invisibles = @[ TL, TR, BR ]; break;
+            case FoldStatusDownLeft:  visibles = @[ BR ]; invisibles = @[ TL, TR, BL ]; break;
+                
+            default:
+                NSLog(@"can't happen");
+                abort();
+        }
+    }
+
+    for (CALayer *layer in visibles) {
+        layer.hidden = NO;
+    }
+    for (CALayer *layer in invisibles) {
+        layer.hidden = YES;
+    }
+}
+
+- (void)setAlpha:(CGFloat)alpha
+{
+    [super setAlpha:alpha];
+    //[self setLayersVisibility:self.status];
+}
+
 - (void)rotateLayers:(NSArray *)layers r:(CGFloat)r ax:(CGFloat)ax ay:(CGFloat)ay az:(CGFloat)az
 {
     [CATransaction setAnimationDuration:self.animationDuration];
@@ -46,24 +92,62 @@
     [CATransaction commit];
 }
 
-- (void)rotateRightLayers:(CGFloat)r
+- (void)rotateLayers:(NSArray*)layers r:(CGFloat)r ax:(CGFloat)ax ay:(CGFloat)ay az:(CGFloat)az
+           halfPointBlock:(void(^)(void))halfPointBlock
 {
-    [self rotateLayers:@[self.topRightLayer, self.bottomRightLayer] r:r ax:0.0 ay:1.0 az:0.0];
+    CFTimeInterval dur = self.animationDuration;
+    
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:0.5*dur];
+    [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [CATransaction setCompletionBlock:^{
+        if (halfPointBlock) {
+            halfPointBlock();
+        }
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:0.5*dur];
+//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+        for (CALayer *layer in layers) {
+            layer.transform = CATransform3DRotate(layer.transform, 0.5*r, ax, ay, az);
+        }
+        [CATransaction commit];
+    }];
+    for (CALayer *layer in layers) {
+        layer.transform = CATransform3DRotate(layer.transform, 0.5*r, ax, ay, az);
+    }
+    [CATransaction commit];
 }
 
-- (void)rotateLeftLayers:(CGFloat)r
+- (void)rotateRightLayers:(CGFloat)r status:(FoldStatus)status
 {
-    [self rotateLayers:@[self.topLeftLayer, self.bottomLeftLayer] r:r ax:0.0 ay:1.0 az:0.0];
+    [self rotateLayers:@[self.topRightLayer, self.bottomRightLayer] r:r ax:0.0 ay:1.0 az:0.0
+        halfPointBlock:^{
+            [self setLayersVisibility:status];
+        }];
 }
 
-- (void)rotateTopLayers:(CGFloat)r
+- (void)rotateLeftLayers:(CGFloat)r status:(FoldStatus)status
 {
-    [self rotateLayers:@[self.topRightLayer, self.topLeftLayer] r:r ax:1.0 ay:0.0 az:0.0];
+    [self rotateLayers:@[self.topLeftLayer, self.bottomLeftLayer] r:r ax:0.0 ay:1.0 az:0.0
+        halfPointBlock:^{
+            [self setLayersVisibility:status];
+        }];
 }
 
-- (void)rotateBottomLayers:(CGFloat)r
+- (void)rotateTopLayers:(CGFloat)r status:(FoldStatus)status
 {
-    [self rotateLayers:@[self.bottomRightLayer, self.bottomLeftLayer] r:r ax:1.0 ay:0.0 az:0.0];
+    [self rotateLayers:@[self.topRightLayer, self.topLeftLayer] r:r ax:1.0 ay:0.0 az:0.0
+        halfPointBlock:^{
+            [self setLayersVisibility:status];
+        }];
+}
+
+- (void)rotateBottomLayers:(CGFloat)r status:(FoldStatus)status
+{
+    [self rotateLayers:@[self.bottomRightLayer, self.bottomLeftLayer] r:r ax:1.0 ay:0.0 az:0.0
+        halfPointBlock:^{
+            [self setLayersVisibility:status];
+        }];
 }
 
 - (void)setStatus:(FoldStatus)status
@@ -76,78 +160,126 @@
     
     if (self.status == FoldStatusNone) {
         switch (status) {
-            case FoldStatusRight: [self rotateLeftLayers:M_PI];   break; // 右に畳む
-            case FoldStatusLeft:  [self rotateRightLayers:-M_PI]; break; // 左に畳む
-            case FoldStatusUp:    [self rotateBottomLayers:M_PI]; break; // 上に畳む
-            case FoldStatusDown:  [self rotateTopLayers:-M_PI];   break; // 下に畳む
+            case FoldStatusRight: // 右に畳む
+                [self rotateLeftLayers:M_PI status:status];
+                break;
+            case FoldStatusLeft: // 左に畳む
+                [self rotateRightLayers:-M_PI status:status];
+                break;
+            case FoldStatusUp: // 上に畳む
+                [self rotateBottomLayers:M_PI status:status];
+                break;
+            case FoldStatusDown: // 下に畳む
+                [self rotateTopLayers:-M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusRight) {
         switch (status) {
-            case FoldStatusNone:      [self rotateLeftLayers:-M_PI];   break; // 左に開く
-            case FoldStatusRightUp:   [self rotateBottomLayers:-M_PI]; break; // 上に畳む
-            case FoldStatusRightDown: [self rotateTopLayers:M_PI];     break; // 下に畳む
+            case FoldStatusNone: // 左に開く
+                [self rotateLeftLayers:-M_PI status:status];
+                break;
+            case FoldStatusRightUp: // 上に畳む
+                [self rotateBottomLayers:-M_PI status:status];
+                break;
+            case FoldStatusRightDown: // 下に畳む
+                [self rotateTopLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusRightUp) {
         switch (status) {
-            case FoldStatusRight: [self rotateBottomLayers:M_PI]; break; // 下に開く
+            case FoldStatusRight: // 下に開く
+                [self rotateBottomLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusRightDown) {
         switch (status) {
-            case FoldStatusRight: [self rotateTopLayers:-M_PI]; break; // 上に開く
+            case FoldStatusRight: // 上に開く
+                [self rotateTopLayers:-M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusLeft) {
         switch (status) {
-            case FoldStatusNone:     [self rotateRightLayers:M_PI];   break; // 右に開く
-            case FoldStatusLeftUp:   [self rotateBottomLayers:-M_PI]; break; // 上に畳む
-            case FoldStatusLeftDown: [self rotateTopLayers:M_PI];     break; // 下に畳む
+            case FoldStatusNone: // 右に開く
+                [self rotateRightLayers:M_PI status:status];
+                break;
+            case FoldStatusLeftUp: // 上に畳む
+                [self rotateBottomLayers:-M_PI status:status];
+                break;
+            case FoldStatusLeftDown: // 下に畳む
+                [self rotateTopLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusLeftUp) {
         switch (status) {
-            case FoldStatusLeft: [self rotateBottomLayers:M_PI]; break; // 下に開く
+            case FoldStatusLeft: // 下に開く
+                [self rotateBottomLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusLeftDown) {
         switch (status) {
-            case FoldStatusLeft: [self rotateTopLayers:-M_PI]; break; // 上に開く
+            case FoldStatusLeft: // 上に開く
+                [self rotateTopLayers:-M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusUp) {
         switch (status) {
-            case FoldStatusNone:    [self rotateBottomLayers:-M_PI]; break; // 下に開く
-            case FoldStatusUpRight: [self rotateLeftLayers:-M_PI];   break; // 右へ畳む
-            case FoldStatusUpLeft:  [self rotateRightLayers:M_PI];   break; // 左へ畳む
+            case FoldStatusNone: // 下に開く
+                [self rotateBottomLayers:-M_PI status:status];
+                break;
+            case FoldStatusUpRight: // 右へ畳む
+                [self rotateLeftLayers:-M_PI status:status];
+                break;
+            case FoldStatusUpLeft: // 左へ畳む
+                [self rotateRightLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusUpRight) {
         switch (status) {
-            case FoldStatusUp: [self rotateLeftLayers:M_PI]; break; // 左に開く
+            case FoldStatusUp: // 左に開く
+                [self rotateLeftLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusUpLeft) {
         switch (status) {
-            case FoldStatusUp: [self rotateRightLayers:-M_PI]; break; // 右に開く
+            case FoldStatusUp: // 右に開く
+                [self rotateRightLayers:-M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusDown) {
         switch (status) {
-            case FoldStatusNone:      [self rotateTopLayers:M_PI];   break; // 上に開く
-            case FoldStatusDownRight: [self rotateLeftLayers:-M_PI]; break; // 右に畳む
-            case FoldStatusDownLeft:  [self rotateRightLayers:M_PI]; break; // 左に畳む
+            case FoldStatusNone: // 上に開く
+                [self rotateTopLayers:M_PI status:status];
+                break;
+            case FoldStatusDownRight: // 右に畳む
+                [self rotateLeftLayers:-M_PI status:status];
+                break;
+            case FoldStatusDownLeft: // 左に畳む
+                [self rotateRightLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusDownRight) {
         switch (status) {
-            case FoldStatusDown: [self rotateLeftLayers:M_PI]; break; // 左に開く
+            case FoldStatusDown: // 左に開く
+                [self rotateLeftLayers:M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else if (self.status == FoldStatusDownLeft) {
         switch (status) {
-            case FoldStatusDown: [self rotateRightLayers:-M_PI]; break; // 右に開く
+            case FoldStatusDown: // 右に開く
+                [self rotateRightLayers:-M_PI status:status];
+                break;
             default: invalid = YES;
         }
     } else {
