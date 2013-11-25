@@ -7,37 +7,7 @@
 //
 
 #import "FoldableQuadImageView.h"
-
-@interface CATransaction (Sequence)
-
-@end
-
-@implementation CATransaction (Sequence)
-
-+ (void)animationSequence:(NSArray*)sequence completed:(void(^)(void))completed
-{
-    if (sequence.count < 1) {
-        if (completed != nil) {
-            completed();
-        }
-        return;
-    }
-    
-    void (^theAction)(void) =  (void(^)(void))sequence[0];
-    NSRange range;
-    range.location = 1;
-    range.length = sequence.count - 1;
-    NSArray *theRests = [sequence subarrayWithRange:range];
-    
-    [CATransaction begin];
-    [CATransaction setCompletionBlock:^{
-        [self animationSequence:theRests completed:completed];
-    }];
-    theAction();
-    [CATransaction commit];
-}
-
-@end
+#import "CATransaction+Sequence.h"
 
 @interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
 

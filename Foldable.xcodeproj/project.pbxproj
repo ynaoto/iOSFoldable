@@ -24,6 +24,7 @@
 		93345F1E18260FB700B1E2B8 /* FoldableTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F1D18260FB700B1E2B8 /* FoldableTests.m */; };
 		93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F2818260FD200B1E2B8 /* QuadImageView.m */; };
 		93345F2B1826105900B1E2B8 /* zzs_mochi01.png in Resources */ = {isa = PBXBuildFile; fileRef = 93345F2A1826105900B1E2B8 /* zzs_mochi01.png */; };
+		9359B8D5184335FE00AE657E /* CATransaction+Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 9359B8D4184335FE00AE657E /* CATransaction+Sequence.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,8 @@
 		93345F2718260FD200B1E2B8 /* QuadImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadImageView.h; sourceTree = "<group>"; };
 		93345F2818260FD200B1E2B8 /* QuadImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuadImageView.m; sourceTree = "<group>"; };
 		93345F2A1826105900B1E2B8 /* zzs_mochi01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zzs_mochi01.png; sourceTree = "<group>"; };
+		9359B8D3184335FE00AE657E /* CATransaction+Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CATransaction+Sequence.h"; sourceTree = "<group>"; };
+		9359B8D4184335FE00AE657E /* CATransaction+Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CATransaction+Sequence.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +127,8 @@
 				93345F2818260FD200B1E2B8 /* QuadImageView.m */,
 				9331297D18293BE700F44449 /* FoldableQuadImageView.h */,
 				9331297E18293BE700F44449 /* FoldableQuadImageView.m */,
+				9359B8D3184335FE00AE657E /* CATransaction+Sequence.h */,
+				9359B8D4184335FE00AE657E /* CATransaction+Sequence.m */,
 				93345F0118260FB700B1E2B8 /* AppDelegate.h */,
 				93345F0218260FB700B1E2B8 /* AppDelegate.m */,
 				93345F0418260FB700B1E2B8 /* Main.storyboard */,
@@ -266,6 +271,7 @@
 				93345F0918260FB700B1E2B8 /* ViewController.m in Sources */,
 				93345F0318260FB700B1E2B8 /* AppDelegate.m in Sources */,
 				93345EFF18260FB700B1E2B8 /* main.m in Sources */,
+				9359B8D5184335FE00AE657E /* CATransaction+Sequence.m in Sources */,
 				93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */,
 				9331297F18293BE700F44449 /* FoldableQuadImageView.m in Sources */,
 			);
