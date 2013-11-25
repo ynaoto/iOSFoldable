@@ -113,6 +113,7 @@
     if (self) {
         [self setupQuadLayers];
         [self setImage:self.image]; // initWithCoder では setImage: の呼び出しが行われないので、強制的に呼び出す。
+        [self setAlpha:self.alpha]; // 同じく alpha
     }
     return self;
 }
