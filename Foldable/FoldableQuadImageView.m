@@ -8,6 +8,37 @@
 
 #import "FoldableQuadImageView.h"
 
+@interface CATransaction (Sequence)
+
+@end
+
+@implementation CATransaction (Sequence)
+
++ (void)animationSequence:(NSArray*)sequence completed:(void(^)(void))completed
+{
+    if (sequence.count < 1) {
+        if (completed != nil) {
+            completed();
+        }
+        return;
+    }
+    
+    void (^theAction)(void) =  (void(^)(void))sequence[0];
+    NSRange range;
+    range.location = 1;
+    range.length = sequence.count - 1;
+    NSArray *theRests = [sequence subarrayWithRange:range];
+    
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        [self animationSequence:theRests completed:completed];
+    }];
+    theAction();
+    [CATransaction commit];
+}
+
+@end
+
 @interface FoldableQuadImageView () <UIGestureRecognizerDelegate>
 
 @end
@@ -69,12 +100,6 @@
     self.layer.sublayers = [invisibles arrayByAddingObjectsFromArray:visibles];;
 }
 
-- (void)setStatusCompleted:(FoldStatus)status
-{
-    _status = status;
-    animating = NO;
-}
-
 - (void)rotateLayer1:(CALayer*)layer1 r1:(CGFloat)r1
               layer2:(CALayer*)layer2 r2:(CGFloat)r2
                   ax:(CGFloat)ax ay:(CGFloat)ay az:(CGFloat)az
@@ -90,25 +115,26 @@
     const float lastHalfRatio = 1.0 - firstHalfRatio;
     CAMediaTimingFunction *firstHalfTimingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
     CAMediaTimingFunction *lastHalfTimingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    
-    [CATransaction begin];
-    [CATransaction setCompletionBlock:^{
-        [self setLayersVisibility:status]; // 後半開始時にレイヤの順序を入れ替える
-        [CATransaction begin];
-        [CATransaction setCompletionBlock:^{
-            [self setStatusCompleted:status]; // 完了
+
+    [CATransaction animationSequence:@[
+            ^{
+                [CATransaction setAnimationDuration:firstHalfRatio*dur];
+                [CATransaction setAnimationTimingFunction:firstHalfTimingFunction];
+                layer1.transform = CATransform3DRotate(layer1.transform, firstHalfRatio*r1, ax, ay, az);
+                layer2.transform = CATransform3DRotate(layer2.transform, firstHalfRatio*r2, ax, ay, az);
+            },
+            ^{
+                [self setLayersVisibility:status]; // 後半開始時にレイヤの順序を入れ替える
+                [CATransaction setAnimationDuration:lastHalfRatio*dur];
+                [CATransaction setAnimationTimingFunction:lastHalfTimingFunction];
+                layer1.transform = CATransform3DRotate(layer1.transform, lastHalfRatio*r1, ax, ay, az);
+                layer2.transform = CATransform3DRotate(layer2.transform, lastHalfRatio*r2, ax, ay, az);
+            },
+        ]
+        completed:^{
+            _status = status;
+            animating = NO;
         }];
-        [CATransaction setAnimationDuration:lastHalfRatio*dur];
-        [CATransaction setAnimationTimingFunction:lastHalfTimingFunction];
-        layer1.transform = CATransform3DRotate(layer1.transform, lastHalfRatio*r1, ax, ay, az);
-        layer2.transform = CATransform3DRotate(layer2.transform, lastHalfRatio*r2, ax, ay, az);
-        [CATransaction commit];
-    }];
-    [CATransaction setAnimationDuration:firstHalfRatio*dur];
-    [CATransaction setAnimationTimingFunction:firstHalfTimingFunction];
-    layer1.transform = CATransform3DRotate(layer1.transform, firstHalfRatio*r1, ax, ay, az);
-    layer2.transform = CATransform3DRotate(layer2.transform, firstHalfRatio*r2, ax, ay, az);
-    [CATransaction commit];
 }
 
 - (void)rotateXLayer1:(CALayer*)layer1 r1:(CGFloat)r1
