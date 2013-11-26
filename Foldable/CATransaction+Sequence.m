@@ -12,12 +12,7 @@
 
 + (void)animationSequence:(NSArray*)sequence completed:(void(^)(void))completed
 {
-    if (sequence.count < 1) {
-        if (completed != nil) {
-            completed();
-        }
-        return;
-    }
+    NSAssert(0 < sequence.count, nil);
     
     void (^theAction)(void) =  (void(^)(void))sequence[0];
     NSRange range;
@@ -27,7 +22,13 @@
     
     [CATransaction begin];
     [CATransaction setCompletionBlock:^{
-        [self animationSequence:theRests completed:completed];
+        if (0 < theRests.count) {
+            [self animationSequence:theRests completed:completed];
+        } else {
+            if (completed != nil) {
+                completed();
+            }
+        }
     }];
     theAction();
     [CATransaction commit];
