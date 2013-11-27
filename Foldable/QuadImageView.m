@@ -81,6 +81,11 @@
 
 - (void)setupQuadImages
 {
+    self.topLeftLayer.contents = nil;
+    self.topRightLayer.contents = nil;
+    self.bottomLeftLayer.contents = nil;
+    self.bottomRightLayer.contents = nil;
+    
     // 変形済みイメージを取得する
     UIGraphicsBeginImageContext(self.bounds.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
