@@ -23,8 +23,8 @@
 		93345F1C18260FB700B1E2B8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93345F1A18260FB700B1E2B8 /* InfoPlist.strings */; };
 		93345F1E18260FB700B1E2B8 /* FoldableTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F1D18260FB700B1E2B8 /* FoldableTests.m */; };
 		93345F2918260FD200B1E2B8 /* QuadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93345F2818260FD200B1E2B8 /* QuadImageView.m */; };
-		93345F2B1826105900B1E2B8 /* zzs_mochi01.png in Resources */ = {isa = PBXBuildFile; fileRef = 93345F2A1826105900B1E2B8 /* zzs_mochi01.png */; };
 		9359B8D5184335FE00AE657E /* CATransaction+Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 9359B8D4184335FE00AE657E /* CATransaction+Sequence.m */; };
+		93CE1E89184F03F900EA1BE9 /* zzm_mochi01.png in Resources */ = {isa = PBXBuildFile; fileRef = 93CE1E88184F03F900EA1BE9 /* zzm_mochi01.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,9 +61,9 @@
 		93345F1D18260FB700B1E2B8 /* FoldableTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FoldableTests.m; sourceTree = "<group>"; };
 		93345F2718260FD200B1E2B8 /* QuadImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadImageView.h; sourceTree = "<group>"; };
 		93345F2818260FD200B1E2B8 /* QuadImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QuadImageView.m; sourceTree = "<group>"; };
-		93345F2A1826105900B1E2B8 /* zzs_mochi01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zzs_mochi01.png; sourceTree = "<group>"; };
 		9359B8D3184335FE00AE657E /* CATransaction+Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CATransaction+Sequence.h"; sourceTree = "<group>"; };
 		9359B8D4184335FE00AE657E /* CATransaction+Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CATransaction+Sequence.m"; sourceTree = "<group>"; };
+		93CE1E88184F03F900EA1BE9 /* zzm_mochi01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zzm_mochi01.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,7 +143,7 @@
 		93345EF918260FB700B1E2B8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				93345F2A1826105900B1E2B8 /* zzs_mochi01.png */,
+				93CE1E88184F03F900EA1BE9 /* zzm_mochi01.png */,
 				93345EFA18260FB700B1E2B8 /* Foldable-Info.plist */,
 				93345EFB18260FB700B1E2B8 /* InfoPlist.strings */,
 				93345EFE18260FB700B1E2B8 /* main.m */,
@@ -247,7 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				93345F0B18260FB700B1E2B8 /* Images.xcassets in Resources */,
-				93345F2B1826105900B1E2B8 /* zzs_mochi01.png in Resources */,
+				93CE1E89184F03F900EA1BE9 /* zzm_mochi01.png in Resources */,
 				93345EFD18260FB700B1E2B8 /* InfoPlist.strings in Resources */,
 				93345F0618260FB700B1E2B8 /* Main.storyboard in Resources */,
 			);
