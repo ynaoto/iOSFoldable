@@ -10,3 +10,7 @@ UIImageView のサブクラスで、設定したイメージを４分割して�
 画像データは「東北ずん子」サイト様 (http://zunko.jp/) のものを利用させて頂いています。この場を借りて御礼申し上げます。
 
 ところで、UISlider に対して、setValue:n animated:YES を送ってもアニメーションしないのは仕様なのでしょうか？ 仕方が無いので、UIView の animateWithDuration:animations: で囲っていますが、どうもスッキリしません・・・。
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ynaoto/iosfoldable/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
